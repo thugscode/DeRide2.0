@@ -1,0 +1,23 @@
+body {
+  text-align: center;
+  font-family: 'Roboto', sans-serif;
+}
+
+.button_style {
+  margin-left: 10px !important;
+  margin-right: 10px;
+}
+
+.centerTable {
+  margin: 0px auto;
+}
+
+h2 {
+    color: #ee5324;
+}
+
+h3 {
+    color: #ee5324;
+}
+
+

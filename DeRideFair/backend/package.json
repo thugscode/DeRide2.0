@@ -1,0 +1,32 @@
+{
+  "name": "ride_api",
+  "version": "1.0.0",
+  "description": "Api for ride",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [
+    "ride",
+    "CRUD"
+  ],
+  "author": "Shailesh Sharma",
+  "license": "ISC",
+  "dependencies": {
+    "@react-google-maps/api": "^2.20.5",
+    "axios": "^1.7.9",
+    "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^4.21.2",
+    "fabric-ca-client": "^2.2.20",
+    "fabric-network": "^2.2.20",
+    "imdb-api": "^4.4.1",
+    "jsonwebtoken": "^8.5.1",
+    "jwt-decode": "^3.1.2",
+    "mongoose": "^5.11.7",
+    "multer": "^1.4.2",
+    "ws": "^8.18.3"
+  }
+}

@@ -1,0 +1,4 @@
+Algorithm,Variance,Total_Riders_Accommodated,Standard_Deviation,Utilization_Rate_Percent,Drivers_with_Zero_Load,Gini_Coefficient
+DeRide,4.33,335,2.08,67.0,22,0.319
+DeRideFair,3.21,254,1.87,50.8,23,0.448
+SCIP,4.73,345,2.17,69.0,26,0.307
