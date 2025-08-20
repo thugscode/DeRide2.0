@@ -10,6 +10,12 @@ import { FaLocationArrow, FaWindowMaximize, FaWindowMinimize } from 'react-icons
 import { GoogleMap, Marker, Autocomplete, DirectionsRenderer, LoadScript } from '@react-google-maps/api';
 import axios from 'axios';
 import eventService from './EventService';
+<<<<<<< Updated upstream
+=======
+import ConnectionStatus from './components/ConnectionStatus';
+import AssignmentStatus from './components/AssignmentStatus';
+import NotificationSystem from './components/NotificationSystem';
+>>>>>>> Stashed changes
 
 const center = {
   lat: 22.3146362,
@@ -42,8 +48,18 @@ class Dashboard extends Component {
       duration: '',
       assignmentTriggered: false,
       showRidersDialog: false,
+<<<<<<< Updated upstream
       isConnectedToEvents: false,
       notifications: [],
+=======
+      websocketConnected: false,
+      assignmentInProgress: false,
+      waitingForAssignment: false,
+      assignmentStatus: null, // 'waiting', 'completed', 'failed'
+      connectionState: 'DISCONNECTED',
+      connectionMessage: '',
+      lastAssignmentUpdate: null,
+>>>>>>> Stashed changes
     };
     this.originRef = createRef();
     this.destinationRef = createRef();
@@ -59,9 +75,111 @@ class Dashboard extends Component {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       this.fetchUserData(token);
       
+<<<<<<< Updated upstream
       // Connect to real-time events
       this.connectToEvents(token);
+=======
+      // Initialize WebSocket connection
+      this.initializeWebSocket(token);
     }
+
+    const savedState = sessionStorage.getItem('dashboardState');
+    if (savedState) {
+      const parsedState = JSON.parse(savedState);
+      if (parsedState.token === token) {
+        this.setState({
+          source: parsedState.source || '',
+          destination: parsedState.destination || '',
+          role: parsedState.role || '',
+          seats: parsedState.seats || '',
+          threshold: parsedState.threshold || '',
+          formSubmitted: parsedState.formSubmitted || false,
+          fetchedData: parsedState.fetchedData || null,
+          databaseUpdated: parsedState.databaseUpdated !== undefined ? parsedState.databaseUpdated : true
+        });
+      }
+>>>>>>> Stashed changes
+    }
+  }
+
+  initializeWebSocket = async (token) => {
+    try {
+      // Connect to WebSocket
+      await eventService.connect(token);
+      console.log('✅ WebSocket connection established successfully');
+    } catch (error) {
+      console.error('❌ Failed to establish WebSocket connection:', error);
+    }
+    
+    // Listen for connection state changes
+    eventService.on('connectionState', this.handleConnectionState);
+    
+    // Listen for assignment-related events (only for state management, not notifications)
+    eventService.on('ASSIGNMENT_STARTING', this.handleAssignmentStarting);
+    eventService.on('ASSIGNMENT_COMPLETED', this.handleAssignmentCompleted);
+    eventService.on('ASSIGNMENT_FAILED', this.handleAssignmentFailed);
+    
+    // Listen for general messages
+    eventService.on('message', this.handleWebSocketMessage);
+  }
+
+  handleConnectionState = (data) => {
+    console.log('🔌 WebSocket connection state changed:', data);
+    this.setState({ 
+      websocketConnected: data.connected,
+      connectionState: data.state,
+      connectionMessage: data.message
+    });
+  }
+
+  handleAssignmentStarting = (data) => {
+    console.log('🚗 Assignment starting:', data);
+    this.setState({ 
+      assignmentInProgress: true,
+      waitingForAssignment: true,
+      assignmentStatus: 'waiting',
+      lastAssignmentUpdate: new Date()
+    });
+  }
+
+  handleAssignmentCompleted = (data) => {
+    console.log('✅ Assignment completed:', data);
+    this.setState({ 
+      assignmentInProgress: false,
+      waitingForAssignment: false,
+      assignmentStatus: 'completed',
+      lastAssignmentUpdate: new Date()
+    });
+    
+    // Automatically fetch the latest ride data after a short delay
+    setTimeout(() => {
+      this.fetchLatestRide();
+    }, 2000);
+    
+    // Clear assignment status after showing success for a while
+    setTimeout(() => {
+      this.setState({ assignmentStatus: null });
+    }, 10000);
+  }
+
+  handleAssignmentFailed = (data) => {
+    console.log('❌ Assignment failed:', data);
+    this.setState({ 
+      assignmentInProgress: false,
+      waitingForAssignment: false,
+      assignmentStatus: 'failed',
+      lastAssignmentUpdate: new Date()
+    });
+    
+    // Clear assignment status after showing error for a while
+    setTimeout(() => {
+      this.setState({ assignmentStatus: null });
+    }, 15000);
+  }
+
+  handleWebSocketMessage = (data) => {
+    console.log('📨 WebSocket message:', data);
+    // Handle other types of messages if needed
   }
 
   calculateRoute = async () => {
@@ -107,6 +225,7 @@ class Dashboard extends Component {
       return;
     }
 
+<<<<<<< Updated upstream
     // For drivers, build waypoints from assigned riders' source and destination points
     let waypoints = [];
     if (
@@ -134,6 +253,175 @@ class Dashboard extends Component {
               lng: parseFloat(riderData.Source.lng) 
             },
             stopover: true,
+=======
+    // For drivers, use Google Maps API with waypoints for all riders
+    if (this.state.fetchedData.Role === 'driver') {
+      await this.showDriverRouteWithWaypoints();
+      return;
+    }
+
+    // For riders, show the existing route logic
+    await this.showRiderRoute();
+  }
+
+  showDriverRouteWithWaypoints = async () => {
+    try {
+      // Driver's source and destination
+      const driverSource = this.state.fetchedData.Source;
+      const driverDestination = this.state.fetchedData.Destination;
+
+      if (!driverSource || !driverDestination) {
+        swal({
+          text: 'Driver source or destination not available.',
+          icon: "warning",
+          type: "warning",
+        });
+        return;
+      }
+
+      // Collect all riders' source and destination points as waypoints
+      let waypoints = [];
+      
+      if (this.state.fetchedData.Riders && Array.isArray(this.state.fetchedData.Riders)) {
+        this.state.fetchedData.Riders.forEach(rider => {
+          const username = Object.keys(rider)[0];
+          const riderData = rider[username];
+          
+          if (riderData.Source && riderData.Source.lat && riderData.Source.lng) {
+            waypoints.push({
+              location: {
+                lat: parseFloat(riderData.Source.lat),
+                lng: parseFloat(riderData.Source.lng)
+              },
+              stopover: true
+            });
+          }
+          
+          if (riderData.Destination && riderData.Destination.lat && riderData.Destination.lng) {
+            waypoints.push({
+              location: {
+                lat: parseFloat(riderData.Destination.lat),
+                lng: parseFloat(riderData.Destination.lng)
+              },
+              stopover: true
+            });
+          }
+        });
+      }
+
+      // Remove duplicate waypoints (same location)
+      waypoints = waypoints.filter((waypoint, index, self) => 
+        index === self.findIndex(w => 
+          Math.abs(w.location.lat - waypoint.location.lat) < 0.0001 && 
+          Math.abs(w.location.lng - waypoint.location.lng) < 0.0001
+        )
+      );
+
+      // Limit waypoints to 25 (Google Maps API limit)
+      if (waypoints.length > 25) {
+        waypoints = waypoints.slice(0, 25);
+        swal({
+          text: `Too many pickup/drop points. Showing optimized route for first 25 locations.`,
+          icon: "info",
+          type: "info",
+        });
+      }
+
+      console.log(`🗺️ Creating driver route with ${waypoints.length} waypoints for ${this.state.fetchedData.Riders?.length || 0} riders`);
+
+      const directionsService = new window.google.maps.DirectionsService();
+      const results = await directionsService.route({
+        origin: {
+          lat: parseFloat(driverSource.lat),
+          lng: parseFloat(driverSource.lng)
+        },
+        destination: {
+          lat: parseFloat(driverDestination.lat),
+          lng: parseFloat(driverDestination.lng)
+        },
+        waypoints: waypoints,
+        travelMode: window.google.maps.TravelMode.DRIVING,
+        optimizeWaypoints: true // Google will optimize the order of waypoints
+      });
+
+      // Calculate total distance and duration across all legs
+      let totalDistance = 0;
+      let totalDuration = 0;
+      
+      results.routes[0].legs.forEach(leg => {
+        totalDistance += leg.distance.value;
+        totalDuration += leg.duration.value;
+      });
+
+      // Convert to readable format
+      const distanceText = totalDistance >= 1000 
+        ? `${(totalDistance / 1000).toFixed(1)} km`
+        : `${totalDistance} m`;
+      
+      const durationText = totalDuration >= 3600 
+        ? `${Math.floor(totalDuration / 3600)}h ${Math.floor((totalDuration % 3600) / 60)}m`
+        : `${Math.floor(totalDuration / 60)}m`;
+
+      this.setState({
+        DriverPath: true,
+        directionsResponse: results,
+        distance: distanceText,
+        duration: durationText,
+      });
+
+      swal({
+        text: `Route calculated with ${waypoints.length} pickup/drop points. Distance: ${distanceText}, Duration: ${durationText}`,
+        icon: "success",
+        type: "success",
+      });
+
+    } catch (error) {
+      console.error('❌ Error showing driver route:', error);
+      swal({
+        text: 'Unable to calculate optimized route: ' + error.message,
+        icon: "error",
+        type: "error",
+      });
+    }
+  }
+
+  showRiderRoute = async () => {
+    // Filter out empty path objects and validate coordinates
+    let validPath = [];
+    if (this.state.fetchedData.Path && Array.isArray(this.state.fetchedData.Path)) {
+      validPath = this.state.fetchedData.Path.filter(point => 
+        point && 
+        typeof point.lat !== 'undefined' && 
+        typeof point.lng !== 'undefined' &&
+        point.lat !== null && 
+        point.lng !== null &&
+        !isNaN(parseFloat(point.lat)) && 
+        !isNaN(parseFloat(point.lng))
+      );
+    }
+
+    if (validPath.length < 2) {
+      swal({
+        text: 'Showing direct route instead of optimized path.',
+        icon: "success",
+        type: "success",
+      });
+      // Fall back to direct route from source to destination
+      if (this.state.fetchedData.Source && this.state.fetchedData.Destination) {
+        try {
+          const directionsService = new window.google.maps.DirectionsService();
+          const results = await directionsService.route({
+            origin: this.state.fetchedData.Source,
+            destination: this.state.fetchedData.Destination,
+            travelMode: window.google.maps.TravelMode.DRIVING,
+          });
+
+          this.setState({
+            DriverPath: true,
+            directionsResponse: results,
+            distance: results.routes[0].legs[0].distance.text,
+            duration: results.routes[0].legs[0].duration.text,
+>>>>>>> Stashed changes
           });
         }
         if (riderData?.Destination) {
@@ -319,6 +607,7 @@ class Dashboard extends Component {
   
 
   componentWillUnmount = () => {
+<<<<<<< Updated upstream
     // Disconnect from event service
     eventService.disconnect();
   }
@@ -450,13 +739,28 @@ class Dashboard extends Component {
   handleEventError = (data) => {
     console.error('❌ Event service error:', data);
     this.setState({ isConnectedToEvents: false });
+=======
+    // Clean up WebSocket event listeners
+    eventService.removeEventListener('connectionState', this.handleConnectionState);
+    eventService.removeEventListener('ASSIGNMENT_STARTING', this.handleAssignmentStarting);
+    eventService.removeEventListener('ASSIGNMENT_COMPLETED', this.handleAssignmentCompleted);
+    eventService.removeEventListener('ASSIGNMENT_FAILED', this.handleAssignmentFailed);
+    eventService.removeEventListener('message', this.handleWebSocketMessage);
+    
+    // Disconnect WebSocket
+    eventService.disconnect();
+>>>>>>> Stashed changes
   }
 
   logOut = () => {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('dashboardState');
     
+<<<<<<< Updated upstream
     // Disconnect from event service
+=======
+    // Clean up WebSocket
+>>>>>>> Stashed changes
     eventService.disconnect();
     
     // Clear form state
@@ -479,6 +783,9 @@ class Dashboard extends Component {
       duration: '',
       DriverPath: false,
       showRidersDialog: false,
+      websocketConnected: false,
+      assignmentInProgress: false,
+      waitingForAssignment: false,
     });
     
     this.props.navigate("/");
@@ -567,6 +874,7 @@ class Dashboard extends Component {
         type: "success",
       });
 
+<<<<<<< Updated upstream
       // Event-driven: If assignment is triggered, wait for notification
       if (response.data.assignmentTriggered) {
         this.setState({ 
@@ -593,6 +901,19 @@ class Dashboard extends Component {
           icon: "info",
           type: "info",
         });
+=======
+      this.setState({ 
+        formSubmitted: true, 
+        databaseUpdated: false,
+        assignmentTriggered: response.data.assignmentTriggered || false,
+        waitingForAssignment: response.data.assignmentTriggered || false,
+        assignmentStatus: response.data.assignmentTriggered ? 'waiting' : null
+      });
+      
+      // WebSocket will handle real-time notifications
+      if (response.data.assignmentTriggered) {
+        console.log('🚗 Assignment triggered by server, waiting for WebSocket notifications...');
+>>>>>>> Stashed changes
       }
 
     } catch (error) {
@@ -643,9 +964,13 @@ class Dashboard extends Component {
       DriverPath: false,
       loading: false,
       showRidersDialog: false,
+      assignmentInProgress: false,
+      waitingForAssignment: false,
+      assignmentStatus: null,
     });
   }
 
+<<<<<<< Updated upstream
   fetchLatestRideAndUpdateDatabase = () => {
     // Event-driven: Fetch latest ride and update database once assignment is done
     if (this.state.loading) {
@@ -736,6 +1061,8 @@ class Dashboard extends Component {
   };
 
   // Manual fetch method for "Get Ride" button
+=======
+>>>>>>> Stashed changes
   fetchLatestRide = () => {
     // Prevent multiple concurrent calls
     if (this.state.loading) {
@@ -773,7 +1100,22 @@ class Dashboard extends Component {
       
       // Automatically update database if not already updated
       if (!this.state.databaseUpdated) {
+<<<<<<< Updated upstream
         this.updateDatabase();
+=======
+        this.setState({ 
+          fetchedData: fetchedData, 
+          waitingForAssignment: false,
+          formSubmitted: false
+        });
+        this.updateDatabase(); // Update database here
+      } else {
+        this.setState({
+          fetchedData: fetchedData,
+          waitingForAssignment: false,
+          formSubmitted: false
+        });
+>>>>>>> Stashed changes
       }
     }).catch((err) => {
       this.setState({ loading: false });
@@ -924,17 +1266,22 @@ class Dashboard extends Component {
         googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
         libraries={['places']}
         onLoad={() => {
+<<<<<<< Updated upstream
           console.log('Google Maps script loaded successfully');
+=======
+          console.log('Google Maps loaded successfully');
+>>>>>>> Stashed changes
         }}
         onError={(error) => {
-          console.error('Google Maps script failed to load:', error);
-          swal({
-            title: 'Google Maps Error',
-            text: 'Failed to load Google Maps. Please check your internet connection.',
-            icon: 'error'
-          });
+          console.error('Google Maps loading error:', error);
         }}
       >
+        {/* Professional Notification System */}
+        <NotificationSystem 
+          eventService={eventService}
+          maxNotifications={3}
+        />
+        
         <Box
           position="relative"
           display="flex"
@@ -1056,12 +1403,27 @@ class Dashboard extends Component {
           </IconButton>
           {!this.state.minimized && (
             <>
+              {/* Global Connection Status */}
+              <Box marginBottom="8px">
+                <ConnectionStatus 
+                  compact={false}
+                  showDetails={true}
+                  style={{ fontSize: '11px' }}
+                />
+              </Box>
+              
               {this.state.formSubmitted ? (
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     {this.state.userData && (
-                      <Card style={{ textAlign: 'left' }}>
+                      <Card style={{ textAlign: 'left', padding: '5px' }}>
                         <h3><VscAccount /> : {this.state.userData.ID} | <BiSolidCoinStack /> : {this.state.userData.Token}</h3>
+                        <Typography variant="caption" style={{ 
+                          color: this.state.websocketConnected ? '#4CAF50' : '#f44336',
+                          fontSize: '10px'
+                        }}>
+                          {this.state.websocketConnected ? '🟢 Real-time' : '🔴 Offline'}
+                        </Typography>
                       </Card>
                     )}
                     <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
@@ -1107,13 +1469,27 @@ class Dashboard extends Component {
                         <p>Threshold: {this.state.threshold}</p>
                       </div>
                     )}
+<<<<<<< Updated upstream
                     {this.state.assignmentTriggered && (
                       <div style={{ margin: '20px 0', textAlign: 'center' }}>
                         <Typography variant="body2" style={{ color: '#4CAF50', fontWeight: 'bold' }}>
                           <span role="img" aria-label="loading">🔄</span> Assignment in progress... Please wait.
                         </Typography>
                       </div>
+=======
+                    
+                    {/* Professional Assignment Status */}
+                    {(this.state.waitingForAssignment || this.state.assignmentStatus) && (
+                      <AssignmentStatus 
+                        status={this.state.assignmentStatus}
+                        assignmentInProgress={this.state.assignmentInProgress}
+                        userRole={this.state.role}
+                        estimatedTime="2-3 minutes"
+                        style={{ margin: '16px 0' }}
+                      />
+>>>>>>> Stashed changes
                     )}
+
                     <Button
                       style={{ backgroundColor: '#4CAF50', color: 'white', marginLeft: '10px' }}
                       onClick={this.fetchLatestRide}
@@ -1133,8 +1509,14 @@ class Dashboard extends Component {
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     {this.state.userData && (
-                      <Card style={{ textAlign: 'left' }}>
+                      <Card style={{ textAlign: 'left', padding: '5px' }}>
                         <h3><VscAccount /> : {this.state.userData.ID} | <BiSolidCoinStack /> : {this.state.userData.Token}</h3>
+                        <Typography variant="caption" style={{ 
+                          color: this.state.websocketConnected ? '#4CAF50' : '#f44336',
+                          fontSize: '10px'
+                        }}>
+                          {this.state.websocketConnected ? '🟢 Real-time' : '🔴 Offline'}
+                        </Typography>
                       </Card>
                     )}
                     <div style={{ marginLeft: 'auto' }}>
@@ -1257,8 +1639,14 @@ class Dashboard extends Component {
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     {this.state.userData && (
-                      <Card style={{ textAlign: 'left' }}>
+                      <Card style={{ textAlign: 'left', padding: '5px' }}>
                         <h3><VscAccount /> : {this.state.userData.ID} | <BiSolidCoinStack /> : {this.state.userData.Token}</h3>
+                        <Typography variant="caption" style={{ 
+                          color: this.state.websocketConnected ? '#4CAF50' : '#f44336',
+                          fontSize: '10px'
+                        }}>
+                          {this.state.websocketConnected ? '🟢 Real-time' : '🔴 Offline'}
+                        </Typography>
                       </Card>
                     )}
                     <div style={{ marginLeft: 'auto' }}>

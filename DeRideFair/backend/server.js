@@ -408,7 +408,7 @@ app.post('/register', async (req, res) => {
 
     // Create user in blockchain
     const gateway = new Gateway();
-    await gateway.connect(ccp, { wallet, identity: trimmedUsername, discovery: { enabled: true, asLocalhost: true } });
+    await gateway.connect(ccp, { wallet, identity: trimmedUsername });
     const network = await gateway.getNetwork(CHANNEL_NAME);
     const contract = network.getContract(CONTRACT_NAME);
 
@@ -481,7 +481,7 @@ app.post("/update-user", async (req, res) => {
       console.log('🔗 Connecting to blockchain network...');
       
       const gateway = new Gateway();
-      await gateway.connect(ccp, { wallet, identity: username, discovery: { enabled: true, asLocalhost: true } });
+      await gateway.connect(ccp, { wallet, identity: username });
 
       const network = await gateway.getNetwork(CHANNEL_NAME);
       const contract = network.getContract(CONTRACT_NAME);
@@ -613,7 +613,7 @@ app.post("/update-database", async (req, res) => {
       console.log('🔗 Connecting to blockchain network...');
 
       const gateway = new Gateway();
-      await gateway.connect(ccp, { wallet, identity: username, discovery: { enabled: true, asLocalhost: true } });
+      await gateway.connect(ccp, { wallet, identity: username });
 
       const network = await gateway.getNetwork(CHANNEL_NAME);
       const contract = network.getContract(CONTRACT_NAME);
@@ -1066,7 +1066,7 @@ app.get('/GetUser', async (req, res) => {
       console.log('🔗 Connecting to blockchain network...');
 
       const gateway = new Gateway();
-      await gateway.connect(ccp, { wallet, identity: username, discovery: { enabled: true, asLocalhost: true } });
+      await gateway.connect(ccp, { wallet, identity: username });
 
       const network = await gateway.getNetwork(CHANNEL_NAME);
       const contract = network.getContract(CONTRACT_NAME);
