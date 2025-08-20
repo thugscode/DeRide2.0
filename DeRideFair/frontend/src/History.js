@@ -1,55 +1,59 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-    Button, LinearProgress,
-    TableBody, Table,
-    TableContainer, TableHead, TableRow, TableCell,
-    Card, Dialog, DialogTitle, DialogContent, DialogActions, Typography
-} from '@material-ui/core';
-import { Pagination } from '@material-ui/lab';
+    Button, 
+    Table,
+    TableBody,
+    TableContainer, 
+    TableHead, 
+    TableRow, 
+    TableCell,
+    Card,
+    Dialog, 
+    DialogTitle, 
+    DialogContent, 
+    DialogActions,
+    Paper
+} from '@mui/material';
+import { Pagination } from '@mui/lab';
+import { VscAccount } from 'react-icons/vsc';
+import { BiSolidCoinStack } from 'react-icons/bi';
 import swal from 'sweetalert';
-import { VscAccount } from "react-icons/vsc";
-import { BiSolidCoinStack } from "react-icons/bi";
 import { withRouter } from './utils';
+import axios from 'axios';
 
-const axios = require('axios');
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:2000';
+const History = ({ navigate }) => {
+    const [state, setState] = useState({
+        token: '',
+        page: 1,
+        loading: false,
+        userData: null,
+        ridesData: [],
+        dialogOpen: false,
+        dialogData: null,
+        error: null
+    });
 
-class History extends Component {
-    constructor() {
-        super();
-        this.state = {
-            token: '',
-            page: 1,
-            loading: false,
-            userData: null,
-            ridesData: [],
-            dialogOpen: false,
-            dialogData: null
-        };
-    }
-
-    componentDidMount = () => {
-        let token = sessionStorage.getItem('token');
+    useEffect(() => {
+        const token = sessionStorage.getItem('token');
         if (!token) {
-            this.props.navigate("/login");
+            navigate("/login");
         } else {
-            this.setState({ token: token });
-            // Set authorization header for all axios requests
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            this.fetchUserData(token);
-            this.fetchRidesData(token);
+            setState(prev => ({ ...prev, token }));
+            fetchUserData(token);
+            fetchRidesData(token);
         }
-    }
+    }, [navigate]);
 
-    fetchUserData = (token) => {
-        axios.get(`${API_BASE_URL}/GetUser`, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'content-type': 'application/json'
-            }
-        }).then((res) => {
-            this.setState({ userData: res.data.result });
-        }).catch((err) => {
+    const fetchUserData = async (token) => {
+        try {
+            const response = await axios.get('http://localhost:2000/GetUser', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            setState(prev => ({ ...prev, userData: response.data.result }));
+        } catch (err) {
             console.error('Failed to fetch user data:', err);
             const errorMessage = err.response?.data?.errorMessage || "Failed to load user data";
             swal({
@@ -57,379 +61,500 @@ class History extends Component {
                 icon: "error",
                 type: "error"
             });
-        });
-    }
-
-    getAddressFromCoords = (coords) => {
-        if (!coords || !coords.lat || !coords.lng) {
-            return 'Location unavailable';
         }
-        return `${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`;
-    }
+    };
 
-    fetchRidesData = async (token) => {
-        this.setState({ loading: true });
+    const fetchRidesData = async (token) => {
+        setState(prev => ({ ...prev, loading: true, error: null }));
         
         try {
-            // First get user data to determine role
-            const userResponse = await axios.get(`${API_BASE_URL}/GetUser`, {
+            const response = await axios.get('http://localhost:2000/history', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
-                    'content-type': 'application/json'
+                    'Content-Type': 'application/json'
                 }
             });
             
-            const userData = userResponse.data.result;
-            const userRole = userData.Role;
-            
-            console.log('Current user data:', userData);
-            console.log('User role:', userRole);
-            
-            let allRides = [];
-            
-            // Try both APIs but filter results based on actual user participation
-            // This ensures users only see rides where they were actually involved
-            try {
-                const driverResponse = await axios.get(`${API_BASE_URL}/driver-history`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'content-type': 'application/json'
-                    }
-                });
-                console.log('Driver history response:', driverResponse.data);
-                if (driverResponse.data.status && Array.isArray(driverResponse.data.rides)) {
-                    // Only include rides where user was actually the driver
-                    const driverRides = driverResponse.data.rides
-                        .filter(ride => ride.Role === 'driver')
-                        .map(ride => ({
-                            ...ride,
-                            fetchedAs: 'driver'
-                        }));
-                    allRides = [...allRides, ...driverRides];
-                }
-            } catch (err) {
-                console.log('Driver history error:', err.response?.data || err.message);
-            }
-            
-            try {
-                const riderResponse = await axios.get(`${API_BASE_URL}/rider-history`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'content-type': 'application/json'
-                    }
-                });
-                console.log('Rider history response:', riderResponse.data);
-                if (riderResponse.data.status && Array.isArray(riderResponse.data.rides)) {
-                    // Only include rides where user was actually the rider
-                    const riderRides = riderResponse.data.rides
-                        .filter(ride => ride.Role === 'rider')
-                        .map(ride => ({
-                            ...ride,
-                            fetchedAs: 'rider'
-                        }));
-                    allRides = [...allRides, ...riderRides];
-                }
-            } catch (err) {
-                console.log('Rider history error:', err.response?.data || err.message);
-            }
-            
-            console.log('All fetched rides before deduplication:', allRides);
-            console.log('Total rides before deduplication:', allRides.length);
-            
-            // Sort by date descending and remove any duplicates based on unique ride identifiers
-            const uniqueRides = allRides.filter((ride, index, self) => {
-                return index === self.findIndex(r => {
-                    // Use _id for reliable duplicate detection (should be unique per ride-role combination)
-                    if (ride._id && r._id) {
-                        return r._id === ride._id;
-                    }
-                    // Fallback to comparing multiple fields including role
-                    return (
-                        r.Date === ride.Date && 
-                        r.Time === ride.Time && 
-                        r.Role === ride.Role &&
-                        r.Source?.lat === ride.Source?.lat &&
-                        r.Source?.lng === ride.Source?.lng &&
-                        r.Destination?.lat === ride.Destination?.lat &&
-                        r.Destination?.lng === ride.Destination?.lng
-                    );
-                });
-            });
-            
-            console.log('Unique rides after deduplication:', uniqueRides);
-            console.log('Total rides after deduplication:', uniqueRides.length);
-            
-            if (uniqueRides.length === 0) {
+            if (response.data.status && response.data.rides) {
+                const sortedRides = response.data.rides.sort((a, b) => new Date(b.Date) - new Date(a.Date));
+                setState(prev => ({ 
+                    ...prev, 
+                    ridesData: sortedRides, 
+                    loading: false 
+                }));
+            } else {
+                setState(prev => ({ 
+                    ...prev, 
+                    ridesData: [], 
+                    loading: false 
+                }));
                 swal({
-                    text: 'No ride history found. Complete some rides to see them here.',
+                    text: "No ride history found",
                     icon: "info",
                     type: "info"
                 });
             }
-            
-            const sortedRides = uniqueRides.sort((a, b) => new Date(b.Date) - new Date(a.Date));
-            this.setState({ ridesData: sortedRides, loading: false });
-            
         } catch (err) {
-            this.setState({ loading: false });
-            console.error('Failed to fetch rides data:', err);
-            const errorMessage = err.response?.data?.errorMessage || "Failed to load ride history";
+            setState(prev => ({ 
+                ...prev, 
+                loading: false, 
+                error: err.response?.data?.errorMessage || "Failed to fetch ride history"
+            }));
             
-            if (err.response?.status === 401) {
-                swal({
-                    title: "Session Expired",
-                    text: "Your session has expired. Please login again.",
-                    icon: "warning",
-                    buttons: {
-                        login: {
-                            text: "Go to Login",
-                            value: "login",
-                            className: "swal-button--confirm",
-                        }
-                    },
-                }).then((value) => {
-                    if (value === "login") {
-                        sessionStorage.removeItem('token');
-                        sessionStorage.removeItem('dashboardState');
-                        this.props.navigate("/");
-                    }
-                });
-            } else {
-                swal({
-                    text: errorMessage,
-                    icon: "error",
-                    type: "error"
-                });
-            }
+            const errorMessage = err.response?.data?.errorMessage || "Failed to fetch ride history";
+            swal({
+                text: errorMessage,
+                icon: "error",
+                type: "error"
+            });
         }
-    }
+    };
 
-    logOut = () => {
+    const handleLogOut = () => {
         sessionStorage.removeItem('token');
-        sessionStorage.removeItem('dashboardState');
-        this.props.navigate("/");
-    }
+        navigate("/");
+    };
 
-    handleDialogOpen = (data, ride) => {
-        console.log('Dialog data received:', { data, ride }); // Debug log
+    const handleDialogOpen = (data) => {
         let formattedData;
     
-        if (ride.Role === 'driver' && data) {
-            // Driver viewing their riders - handle both array and non-array cases
-            if (Array.isArray(data)) {
-                formattedData = data.map((item) => ({
-                    user: item.riderId || item.user || item,
-                    source: item.Source,
-                    destination: item.Destination,
-                    showLocation: !!(item.Source && item.Destination)
-                }));
-            } else {
-                // Handle case where data might be a single rider or string
-                formattedData = [{
-                    user: typeof data === 'string' ? data : (data.riderId || data.user || data),
-                    source: data.Source,
-                    destination: data.Destination,
-                    showLocation: !!(data.Source && data.Destination)
-                }];
+        if (Array.isArray(data)) {
+            // Handle Riders data
+            formattedData = data.map((item) => ({
+                user: item.riderId || item.user,
+                source: item.Source,
+                destination: item.Destination,
+            }));
+        } else if (typeof data === "string") {
+            try {
+                // Handle Driver data (parse string)
+                const parsedData = JSON.parse(data);
+                formattedData = {
+                    user: parsedData.ID,
+                    source: parsedData.Source,
+                    destination: parsedData.Destination,
+                };
+            } catch (e) {
+                console.error("Failed to parse data", e);
+                formattedData = { user: data };
             }
-        } else if (ride.Role === 'rider') {
-            // Rider viewing their driver - only show driver ID
-            formattedData = {
-                user: typeof data === 'string' ? data : (data?.ID || data?.user || data || 'Unknown Driver'),
-                showLocation: false
-            };
         } else {
-            // Fallback for other cases
-            formattedData = { user: data || 'No data available', showLocation: false };
+            formattedData = { user: data };
         }
     
-        console.log('Formatted data:', formattedData); // Debug log
-        this.setState({ dialogOpen: true, dialogData: formattedData });
+        setState(prev => ({ 
+            ...prev, 
+            dialogOpen: true, 
+            dialogData: formattedData 
+        }));
     };
-    
 
-    handleDialogClose = () => {
-        this.setState({ dialogOpen: false, dialogData: null });
-    }
+    const handleDialogClose = () => {
+        setState(prev => ({ 
+            ...prev, 
+            dialogOpen: false, 
+            dialogData: null 
+        }));
+    };
 
-    getPaginatedData = () => {
-        const { page, ridesData } = this.state;
-        const startIndex = (page - 1) * 7;
-        const endIndex = startIndex + 7;
+    const getPaginatedData = () => {
+        const { page, ridesData } = state;
+        const itemsPerPage = 10; // Increased from 7 to 10 for better full screen usage
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
         return ridesData.slice(startIndex, endIndex);
-    }
-    
-    render() {
-        return (
-            <div style={{ padding: '10px', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-            {this.state.loading && <LinearProgress size={40} />}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h2>History</h2>
-                {this.state.userData && (
-                <Card style={{ textAlign: 'left', padding: '5px' }}>
-                 <h3><VscAccount /> : {this.state.userData.ID} | <BiSolidCoinStack /> : {this.state.userData.Token}</h3>
-                </Card>
-                )}
-                <div>
-                <Button
-                    className="button_style"
-                    variant="contained"
-                    size="small"
-                    style={{ backgroundColor: '#4CAF50', color: 'white' }}
-                    onClick={() => this.props.navigate("/dashboard")}
-                >
-                    Book a Ride
-                </Button>
-                <Button
-                    className="button_style"
-                    variant="contained"
-                    size="small"
-                    style={{ backgroundColor: 'red', color: 'white', marginRight: '10px' }}
-                    onClick={this.logOut}
-                >
-                    Log Out
-                </Button>
-                </div>
-            </div>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'row' }}>
-                                        <div style={{ flex: 1 }}>
-                            <Card style={{ padding: '15px' }}>
-                                <Typography variant="h6" style={{ marginBottom: '15px' }}>
-                                    Ride History ({this.state.ridesData.length} rides)
-                                </Typography>
-                                {this.state.ridesData.length === 0 && !this.state.loading && (
-                                    <div style={{ textAlign: 'center', padding: '20px' }}>
-                                        <Typography variant="body1" color="textSecondary">
-                                            No ride history found.
-                                        </Typography>
-                                        <Typography variant="body2" color="textSecondary" style={{ marginTop: '10px' }}>
-                                            Complete some rides to see them here. Make sure to:
-                                        </Typography>
-                                        <ul style={{ textAlign: 'left', marginTop: '10px' }}>
-                                            <li>Submit your ride request</li>
-                                            <li>Wait for assignment</li>
-                                            <li>Click "Save to History" when assigned</li>
-                                        </ul>
-                                    </div>
-                                )}
-                                {this.state.ridesData.length > 0 && (
-                                    <TableContainer>
-                                        <Table aria-label="simple table">
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell align="center"><strong>Date</strong></TableCell>
-                                                    <TableCell align="center"><strong>Time</strong></TableCell>
-                                                    <TableCell align="center"><strong>Role</strong></TableCell>
-                                                    <TableCell align="center"><strong>Source</strong></TableCell>
-                                                    <TableCell align="center"><strong>Destination</strong></TableCell>
-                                                    <TableCell align="center"><strong>Driver/Rider</strong></TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                {this.getPaginatedData().map((ride, index) => (
-                                                    <TableRow key={index}>
-                                                        <TableCell align="center">{new Date(ride.Date).toLocaleDateString()}</TableCell>
-                                                        <TableCell align="center">{ride.Time}</TableCell>
-                                                        <TableCell align="center" style={{ textTransform: 'capitalize' }}>{ride.Role}</TableCell>
-                                                        <TableCell align="center">
-                                                            {ride.Source && typeof ride.Source === 'object' 
-                                                                ? `(${ride.Source.lat}, ${ride.Source.lng})` 
-                                                                : (ride.Source || 'N/A')}
-                                                        </TableCell>
-                                                        <TableCell align="center">
-                                                            {ride.Destination && typeof ride.Destination === 'object' 
-                                                                ? `(${ride.Destination.lat}, ${ride.Destination.lng})` 
-                                                                : (ride.Destination || 'N/A')}
-                                                        </TableCell>
-                                                        <TableCell align="center">
-                                                            <Button
-                                                                variant="contained"
-                                                                size="small"
-                                                                style={{ backgroundColor: '#37474F', color: 'white' }}
-                                                                onClick={() => {
-                                                                    console.log('Button clicked for ride:', ride);
-                                                                    console.log('Data to pass:', ride.Role === 'driver' ? ride.Riders : ride.Driver);
-                                                                    this.handleDialogOpen(ride.Role === 'driver' ? ride.Riders : ride.Driver, ride);
-                                                                }}
-                                                            >
-                                                                {ride.Role === 'driver' ? 'Riders' : 'Driver'}
-                                                            </Button>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
-                                        </Table>
-                                        <br />
-                                        <br />
-                                        <Pagination
-                                            count={Math.ceil(this.state.ridesData.length / 7)}
-                                            page={this.state.page}
-                                            onChange={(event, value) => this.setState({ page: value })}
-                                            color="primary"
-                                        />
-                                    </TableContainer>
-                                )}
+    };
+
+    const handlePageChange = (event, value) => {
+        setState(prev => ({ ...prev, page: value }));
+    };
+
+    const getPageCount = () => {
+        const itemsPerPage = 10;
+        return Math.ceil(state.ridesData.length / itemsPerPage);
+    };
+
+    const formatLocation = (location) => {
+        if (location && typeof location === 'object') {
+            return `${location.lat?.toFixed(4) || 0}, ${location.lng?.toFixed(4) || 0}`;
+        }
+        return 'N/A';
+    };
+
+    return (
+        <div style={{
+            height: '98vh',
+            width: '98vw',
+            backgroundColor: 'white',
+            padding: '20px',
+            boxSizing: 'border-box',
+            overflow: 'auto'
+        }}>
+            {/* Main content */}
+            <div style={{
+                width: '100%',
+                height: '100%'
+            }}>
+                {/* Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                    <h3>Ride History</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        {state.userData && (
+                            <Card style={{ textAlign: 'left', padding: '5px' }}>
+                                <h3><VscAccount /> : {state.userData.ID} | <BiSolidCoinStack /> : {state.userData.Token}</h3>
                             </Card>
-                        </div>
+                        )}
+                        <Button
+                            className="button_style"
+                            variant="contained"
+                            style={{ backgroundColor: '#4CAF50', color: 'white', marginRight: '10px' }}
+                            size="small"
+                            onClick={() => navigate("/dashboard")}
+                        >
+                            Dashboard
+                        </Button>
+                        <Button
+                            className="button_style"
+                            variant="contained"
+                            size="small"
+                            style={{ backgroundColor: 'red', color: 'white' }}
+                            onClick={handleLogOut}
+                        >
+                            Log Out
+                        </Button>
+                    </div>
                 </div>
+
+                {/* Loading indicator */}
+                {state.loading && (
+                    <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                        <p>Loading ride history...</p>
+                    </div>
+                )}
+
+                {/* Error message */}
+                {state.error && (
+                    <div style={{ 
+                        backgroundColor: '#ffebee', 
+                        color: '#c62828', 
+                        padding: '10px', 
+                        borderRadius: '5px', 
+                        marginBottom: '20px',
+                        border: '1px solid #ef5350'
+                    }}>
+                        {state.error}
+                    </div>
+                )}
+
+                {/* Main content */}
+                {!state.loading && state.ridesData.length === 0 ? (
+                    <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                        <h3>No ride history found</h3>
+                        <p>Complete some rides to see them here</p>
+                    </div>
+                ) : (
+                    <div>
+                        <TableContainer component={Paper} style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow style={{ backgroundColor: '#f5f5f5' }}>
+                                        <TableCell align="center" style={{ fontWeight: 'bold' }}>Date</TableCell>
+                                        <TableCell align="center" style={{ fontWeight: 'bold' }}>Time</TableCell>
+                                        <TableCell align="center" style={{ fontWeight: 'bold' }}>Role</TableCell>
+                                        <TableCell align="center" style={{ fontWeight: 'bold' }}>Source</TableCell>
+                                        <TableCell align="center" style={{ fontWeight: 'bold' }}>Destination</TableCell>
+                                        <TableCell align="center" style={{ fontWeight: 'bold' }}>Details</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {getPaginatedData().map((ride, index) => (
+                                        <TableRow 
+                                            key={ride._id || index}
+                                            style={{ 
+                                                backgroundColor: index % 2 === 0 ? 'white' : '#f9f9f9'
+                                            }}
+                                        >
+                                            <TableCell align="center">
+                                                {new Date(ride.Date).toLocaleDateString()}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                {ride.Time}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                <span style={{
+                                                    backgroundColor: ride.Role === 'driver' ? '#e3f2fd' : '#fce4ec',
+                                                    color: ride.Role === 'driver' ? '#1976d2' : '#c2185b',
+                                                    padding: '4px 8px',
+                                                    borderRadius: '12px',
+                                                    fontSize: '12px',
+                                                    textTransform: 'capitalize'
+                                                }}>
+                                                    {ride.Role}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                {formatLocation(ride.Source)}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                {formatLocation(ride.Destination)}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                <Button
+                                                    variant="contained"
+                                                    size="small"
+                                                    style={{ backgroundColor: '#4CAF50', color: 'white' }}
+                                                    onClick={() => handleDialogOpen(ride.Role === 'driver' ? ride.Riders : ride.Driver)}
+                                                >
+                                                    {ride.Role === 'driver' ? 'Riders' : 'Driver'}
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+
+                        {/* Enhanced Pagination */}
+                        {state.ridesData.length > 0 && getPageCount() > 1 && (
+                            <div style={{ 
+                                display: 'flex', 
+                                justifyContent: 'space-between', 
+                                alignItems: 'center', 
+                                marginTop: '30px',
+                                padding: '20px',
+                                backgroundColor: '#f9f9f9',
+                                borderRadius: '10px',
+                                border: '1px solid #e0e0e0'
+                            }}>
+                                {/* Results info */}
+                                <div style={{ color: '#666', fontSize: '14px' }}>
+                                    Showing {((state.page - 1) * 10) + 1} to {Math.min(state.page * 10, state.ridesData.length)} of {state.ridesData.length} rides
+                                </div>
+                                
+                                {/* Pagination controls */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                    {/* First page button */}
+                                    <Button
+                                        disabled={state.page === 1}
+                                        onClick={() => handlePageChange(null, 1)}
+                                        size="small"
+                                        style={{ 
+                                            backgroundColor: state.page === 1 ? '#ccc' : '#4CAF50', 
+                                            color: 'white',
+                                            minWidth: '35px',
+                                            fontSize: '12px'
+                                        }}
+                                    >
+                                        First
+                                    </Button>
+                                    
+                                    {/* Previous button */}
+                                    <Button
+                                        disabled={state.page === 1}
+                                        onClick={() => handlePageChange(null, state.page - 1)}
+                                        size="small"
+                                        style={{ 
+                                            backgroundColor: state.page === 1 ? '#ccc' : '#4CAF50', 
+                                            color: 'white',
+                                            minWidth: '35px',
+                                            fontSize: '12px'
+                                        }}
+                                    >
+                                        Prev
+                                    </Button>
+                                    
+                                    {/* MUI Pagination component */}
+                                    <Pagination
+                                        count={getPageCount()}
+                                        page={state.page}
+                                        onChange={handlePageChange}
+                                        color="primary"
+                                        size="small"
+                                        showFirstButton={false}
+                                        showLastButton={false}
+                                        siblingCount={1}
+                                        boundaryCount={1}
+                                        sx={{
+                                            '& .MuiPaginationItem-root': {
+                                                backgroundColor: 'white',
+                                                border: '1px solid #ddd',
+                                                '&:hover': {
+                                                    backgroundColor: '#4CAF50',
+                                                    color: 'white'
+                                                },
+                                                '&.Mui-selected': {
+                                                    backgroundColor: '#ee5324',
+                                                    color: 'white',
+                                                    '&:hover': {
+                                                        backgroundColor: '#d84315'
+                                                    }
+                                                }
+                                            }
+                                        }}
+                                    />
+                                    
+                                    {/* Next button */}
+                                    <Button
+                                        disabled={state.page >= getPageCount()}
+                                        onClick={() => handlePageChange(null, state.page + 1)}
+                                        size="small"
+                                        style={{ 
+                                            backgroundColor: state.page >= getPageCount() ? '#ccc' : '#4CAF50',
+                                            color: 'white',
+                                            minWidth: '35px',
+                                            fontSize: '12px'
+                                        }}
+                                    >
+                                        Next
+                                    </Button>
+                                    
+                                    {/* Last page button */}
+                                    <Button
+                                        disabled={state.page >= getPageCount()}
+                                        onClick={() => handlePageChange(null, getPageCount())}
+                                        size="small"
+                                        style={{ 
+                                            backgroundColor: state.page >= getPageCount() ? '#ccc' : '#4CAF50',
+                                            color: 'white',
+                                            minWidth: '35px',
+                                            fontSize: '12px'
+                                        }}
+                                    >
+                                        Last
+                                    </Button>
+                                </div>
+                                
+                                {/* Page jump input */}
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    <span style={{ color: '#666', fontSize: '14px' }}>Go to page:</span>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        max={getPageCount()}
+                                        value={state.page}
+                                        onChange={(e) => {
+                                            const newPage = parseInt(e.target.value);
+                                            if (newPage >= 1 && newPage <= getPageCount()) {
+                                                handlePageChange(null, newPage);
+                                            }
+                                        }}
+                                        style={{
+                                            width: '60px',
+                                            padding: '5px',
+                                            border: '1px solid #ddd',
+                                            borderRadius: '4px',
+                                            textAlign: 'center'
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
-            <Dialog open={this.state.dialogOpen} onClose={this.handleDialogClose}>
-                <DialogTitle>
-                    {Array.isArray(this.state.dialogData) ? 'Riders Details' : 'Driver Details'}
+
+            {/* Details Dialog */}
+            <Dialog 
+                open={state.dialogOpen} 
+                onClose={handleDialogClose}
+                maxWidth="sm"
+                fullWidth
+                PaperProps={{
+                    style: { borderRadius: '10px' }
+                }}
+            >
+                <DialogTitle style={{ backgroundColor: '#f5f5f5', textAlign: 'center' }}>
+                    <h3>{Array.isArray(state.dialogData) ? 'Riders Details' : 'Driver Details'}</h3>
                 </DialogTitle>
-                <DialogContent>
-                    <div style={{ minWidth: '300px', padding: '10px' }}>
-                        {Array.isArray(this.state.dialogData) ? (
-                            // Driver viewing riders - same clean style as rider view
-                            this.state.dialogData.length > 0 ? (
-                                this.state.dialogData.map((item, index) => (
-                                    <div key={index} style={{ marginBottom: '15px', padding: '15px', border: '1px solid #e0e0e0', borderRadius: '8px', backgroundColor: '#f9f9f9' }}>
-                                        <div style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '8px', color: '#333' }}>
-                                            <strong>Rider ID:</strong> {item.user}
-                                        </div>
-                                        {item.showLocation && item.source && item.destination && (
-                                            <div style={{ fontSize: '14px', color: '#666' }}>
-                                                <div style={{ marginBottom: '4px' }}>
-                                                    <strong>Source:</strong> {item.source.lat}, {item.source.lng}
-                                                </div>
-                                                <div>
-                                                    <strong>Destination:</strong> {item.destination.lat}, {item.destination.lng}
-                                                </div>
+                <DialogContent style={{ padding: '20px' }}>
+                    <div style={{ marginTop: '10px' }}>
+                        {Array.isArray(state.dialogData) ? (
+                            // Multiple Riders
+                            state.dialogData.length > 0 ? (
+                                state.dialogData.map((item, index) => (
+                                    <div key={index} style={{ 
+                                        border: '1px solid #ddd', 
+                                        borderRadius: '5px', 
+                                        padding: '15px', 
+                                        marginBottom: '15px',
+                                        backgroundColor: '#fafafa'
+                                    }}>
+                                        <h4 style={{ margin: '0 0 10px 0', color: '#ee5324' }}>
+                                            Rider: {item.user}
+                                        </h4>
+                                        {item.source && item.destination && (
+                                            <div style={{ marginLeft: '10px' }}>
+                                                <p style={{ margin: '5px 0' }}>
+                                                    <strong>Source:</strong> {formatLocation(item.source)}
+                                                </p>
+                                                <p style={{ margin: '5px 0' }}>
+                                                    <strong>Destination:</strong> {formatLocation(item.destination)}
+                                                </p>
                                             </div>
                                         )}
                                     </div>
                                 ))
                             ) : (
-                                <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                                <div style={{ 
+                                    backgroundColor: '#e1f5fe', 
+                                    color: '#0277bd', 
+                                    padding: '15px', 
+                                    borderRadius: '5px',
+                                    textAlign: 'center'
+                                }}>
                                     No riders found for this ride.
                                 </div>
                             )
                         ) : (
-                            // Rider viewing driver - keep same clean style
-                            this.state.dialogData && this.state.dialogData.user ? (
-                                <div style={{ padding: '15px', border: '1px solid #e0e0e0', borderRadius: '8px', backgroundColor: '#f9f9f9' }}>
-                                    <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#333' }}>
-                                        <strong>Driver ID:</strong> {this.state.dialogData.user}
-                                    </div>
+                            // Single Driver
+                            state.dialogData && state.dialogData.user ? (
+                                <div style={{ 
+                                    border: '1px solid #ddd', 
+                                    borderRadius: '5px', 
+                                    padding: '15px',
+                                    backgroundColor: '#fafafa'
+                                }}>
+                                    <h4 style={{ margin: '0 0 10px 0', color: '#ee5324' }}>
+                                        Driver: {state.dialogData.user}
+                                    </h4>
+                                    {state.dialogData.source && state.dialogData.destination && (
+                                        <div style={{ marginLeft: '10px' }}>
+                                            <p style={{ margin: '5px 0' }}>
+                                                <strong>Source:</strong> {formatLocation(state.dialogData.source)}
+                                            </p>
+                                            <p style={{ margin: '5px 0' }}>
+                                                <strong>Destination:</strong> {formatLocation(state.dialogData.destination)}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
-                                <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                                <div style={{ 
+                                    backgroundColor: '#fff3e0', 
+                                    color: '#f57c00', 
+                                    padding: '15px', 
+                                    borderRadius: '5px',
+                                    textAlign: 'center'
+                                }}>
                                     No data available
                                 </div>
                             )
                         )}
                     </div>
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={this.handleDialogClose} color="primary" variant="contained">
+                <DialogActions style={{ padding: '15px 20px' }}>
+                    <Button 
+                        onClick={handleDialogClose} 
+                        variant="contained"
+                        style={{ backgroundColor: '#4CAF50', color: 'white' }}
+                        fullWidth
+                    >
                         Close
                     </Button>
                 </DialogActions>
             </Dialog>
-            </div>
-        );
-    }
-}
+        </div>
+    );
+};
 
 export default withRouter(History);

@@ -7,7 +7,7 @@ import {
   LinearProgress,
   IconButton,
   Collapse
-} from '@material-ui/core';
+} from '@mui/material';
 import { 
   Wifi, 
   WifiOff, 
@@ -17,7 +17,7 @@ import {
   ExpandMore,
   ExpandLess,
   InfoOutlined
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 import eventService from '../EventService';
 
 class ConnectionStatus extends Component {
@@ -62,18 +62,29 @@ class ConnectionStatus extends Component {
       connected: data.connected,
       reconnectAttempts: data.reconnectAttempts || 0,
       maxReconnectAttempts: data.maxReconnectAttempts || 5,
-      lastUpdate: new Date()
+      lastUpdate: new Date(),
+      connectionHealth: { 
+        healthy: data.health !== undefined ? data.health : data.connected,
+        timeSinceLastActivity: data.connected ? 0 : null 
+      }
     });
   }
 
   updateConnectionStatus() {
-    const status = eventService.getConnectionStatus();
+    const connected = eventService.getConnectionStatus();
+    const state = eventService.getConnectionState();
+    const health = eventService.getConnectionHealth();
+    
     this.setState({
-      connectionState: status.state,
-      connected: status.connected,
-      reconnectAttempts: status.reconnectAttempts,
-      maxReconnectAttempts: status.maxReconnectAttempts,
-      lastUpdate: new Date()
+      connectionState: state,
+      connected: connected,
+      reconnectAttempts: health.reconnectAttempts || 0,
+      maxReconnectAttempts: health.maxReconnectAttempts || 5,
+      lastUpdate: new Date(),
+      connectionHealth: {
+        healthy: health.healthy,
+        timeSinceLastActivity: health.timeSinceLastActivity
+      }
     });
   }
 

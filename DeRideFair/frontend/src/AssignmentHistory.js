@@ -4,15 +4,13 @@ import {
     TableBody, Table,
     TableContainer, TableHead, TableRow, TableCell,
     Card, Dialog, DialogTitle, DialogContent, DialogActions,
-    Typography
-} from '@material-ui/core';
-import { Pagination } from '@material-ui/lab';
+    Typography, Pagination
+} from '@mui/material';
 import swal from 'sweetalert';
 import { VscAccount } from "react-icons/vsc";
 import { BiSolidCoinStack } from "react-icons/bi";
 import { withRouter } from './utils';
-
-const axios = require('axios');
+import axios from 'axios';
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:2000';
 
 class AssignmentHistory extends Component {

@@ -237,7 +237,10 @@ async function checkAndTriggerAssignment(contract, username) {
 
 // Database configuration from environment variables
 const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/productDB";
-mongoose.connect(MONGODB_URI);
+mongoose.connect(MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 
 const app = express();
 app.use(cors({
@@ -621,15 +624,34 @@ app.post("/update-database", async (req, res) => {
 
       console.log('📖 Reading user data from blockchain...');
       let result;
-      result = await contract.evaluateTransaction('ReadUser', username.toString());
-      const userData = JSON.parse(result.toString());
-      console.log('📋 User data from blockchain:', {
-        ID: userData.ID,
-        Role: userData.Role,
-        Assigned: userData.Assigned,
-        Driver: userData.Driver,
-        RidersCount: userData.Riders ? userData.Riders.length : 0
-      });
+      let userData;
+      try {
+        result = await contract.evaluateTransaction('ReadUser', username.toString());
+        userData = JSON.parse(result.toString());
+        
+        // Validate essential userData fields
+        if (!userData || !userData.ID || !userData.Role) {
+          console.error('❌ Invalid user data from blockchain:', userData);
+          return res.status(400).json({ 
+            status: false, 
+            errorMessage: 'Invalid user data received from blockchain. Please try updating your ride details again.' 
+          });
+        }
+        
+        console.log('📋 User data from blockchain:', {
+          ID: userData.ID,
+          Role: userData.Role,
+          Assigned: userData.Assigned,
+          Driver: userData.Driver,
+          RidersCount: userData.Riders ? userData.Riders.length : 0
+        });
+      } catch (blockchainReadError) {
+        console.error('❌ Failed to read user data from blockchain:', blockchainReadError.message);
+        return res.status(500).json({ 
+          status: false, 
+          errorMessage: 'Failed to read user data from blockchain. Please try again.' 
+        });
+      }
 
       // Handle the new chaincode data structure
       let optimizedPath = [];
@@ -778,6 +800,9 @@ app.post("/update-database", async (req, res) => {
             }
           );
           
+          // Fetch the updated ride info to return
+          const updatedRide = await RideInfo.findById(recentDuplicate._id);
+
           console.log('✅ Updated recent duplicate ride successfully');
           
           // Notify user about successful database update
@@ -787,7 +812,7 @@ app.post("/update-database", async (req, res) => {
             timestamp: new Date().toISOString()
           });
           
-          res.status(200).json({ status: true, message: 'Ride info updated successfully!' });
+          res.status(200).json({ status: true, message: 'Ride info updated successfully!', ride: updatedRide });
         } else {
           console.log('🆕 No recent complete duplicate found, creating new...');
           
@@ -828,7 +853,7 @@ app.post("/update-database", async (req, res) => {
             timestamp: new Date().toISOString()
           });
           
-          res.status(200).json({ status: true, message: 'Ride info saved successfully!' });
+          res.status(200).json({ status: true, message: 'Ride info saved successfully!', ride: newRideInfo });
         }
       } else {
         console.log('⏳ User not assigned yet, skipping database save');
@@ -846,192 +871,25 @@ app.post("/update-database", async (req, res) => {
   }
 });
 
-app.get('/driver-history', async (req, res) => {
-  console.log('🚗 === DRIVER HISTORY REQUEST STARTED ===');
+app.get('/history', async (req, res) => {
+  console.log('� === RIDE HISTORY REQUEST STARTED ===');
   try {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) {
-      console.log('❌ No token provided');
       return res.status(401).json({ errorMessage: 'Token is missing!', status: false });
     }
 
     jwt.verify(token, JWT_SECRET, async (err, decoded) => {
       if (err || !decoded?.user) {
-        console.log('❌ Token verification failed:', err?.message);
         return res.status(401).json({ errorMessage: 'User unauthorized!', status: false });
       }
 
       const username = decoded.user;
-      console.log(`👤 Fetching driver history for: ${username}`);
-      
-      // Find rides where user is the driver
-      const driverRides = await RideInfo.find({ 
-        Driver: username,
-        Assigned: true,
-        // Only include rides with valid rider data
-        'Riders.0': { $exists: true }, // Has at least one rider
-        'Riders.user': { $ne: null, $ne: '' } // Riders have valid user IDs
-      }).sort({ Date: -1 }); // Sort by date descending (newest first)
-      
-      console.log(`📊 Found ${driverRides.length} total driver rides in database`);
-      
-      // Helper function to clean location data (remove MongoDB _id)
-      const cleanLocation = (location) => ({
-        lat: location.lat,
-        lng: location.lng
-      });
-
-      // Create a map to group rides by route to avoid duplicates
-      const rideMap = new Map();
-      
-      driverRides.forEach((ride, index) => {
-        // Additional validation: ensure ride has valid riders
-        const validRiders = ride.Riders.filter(rider => 
-          rider && 
-          rider.user && 
-          rider.user.trim() !== '' &&
-          rider.Source && 
-          rider.Destination &&
-          typeof rider.Source.lat === 'number' && 
-          typeof rider.Source.lng === 'number' &&
-          typeof rider.Destination.lat === 'number' && 
-          typeof rider.Destination.lng === 'number' &&
-          rider.Source.lat !== 0 && 
-          rider.Source.lng !== 0 &&
-          rider.Destination.lat !== 0 && 
-          rider.Destination.lng !== 0
-        );
-
-        // Skip rides with no valid riders
-        if (validRiders.length === 0) {
-          console.log(`⏭️ Skipping ride ${index + 1} - no valid riders`);
-          return;
-        }
-
-        // Create a route-based signature (excluding riders to avoid duplicates with different rider states)
-        const routeSignature = `${ride.Source.lat}_${ride.Source.lng}_${ride.Destination.lat}_${ride.Destination.lng}`;
-        
-        console.log(`🔍 Processing ride ${index + 1}: Route ${routeSignature}, Valid Riders: ${validRiders.length}, Date: ${ride.Date}`);
-        
-        const rideData = {
-          _id: ride._id.toString(),
-          Date: ride.Date,
-          Time: ride.Time,
-          Role: 'driver',
-          Source: cleanLocation(ride.Source),
-          Destination: cleanLocation(ride.Destination),
-          Riders: validRiders.map(rider => ({
-            riderId: rider.user,
-            Source: cleanLocation(rider.Source),
-            Destination: cleanLocation(rider.Destination)
-          }))
-        };
-        
-        // For the same route, keep the most recent ride (which should have the latest rider information)
-        if (!rideMap.has(routeSignature) || ride.Date > rideMap.get(routeSignature).Date) {
-          rideMap.set(routeSignature, rideData);
-          console.log(`✅ Keeping ride ${index + 1} as the most recent for route ${routeSignature}`);
-        } else {
-          console.log(`⏭️ Skipping ride ${index + 1} - older version of route ${routeSignature}`);
-        }
-      });
-      
-      // Convert map values to array and sort by date
-      const driverHistory = Array.from(rideMap.values())
-        .sort((a, b) => new Date(b.Date) - new Date(a.Date));
-      
-      console.log(`📋 Returning ${driverHistory.length} unique driver rides`);
-      console.log('🚗 === DRIVER HISTORY REQUEST COMPLETED ===\n');
-      
-      res.status(200).json({ status: true, rides: driverHistory });
+      const rides = await RideInfo.find({ ID: username });
+      res.status(200).json({ status: true, rides });
     });
   } catch (error) {
-    console.error('💥 Driver history error:', error);
-    console.log('🚗 === DRIVER HISTORY REQUEST FAILED ===\n');
-    res.status(500).json({ errorMessage: `Failed to fetch driver history: ${error}`, status: false });
-  }
-});
-
-app.get('/rider-history', async (req, res) => {
-  console.log('🧑‍🤝‍🧑 === RIDER HISTORY REQUEST STARTED ===');
-  try {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) {
-      console.log('❌ No token provided');
-      return res.status(401).json({ errorMessage: 'Token is missing!', status: false });
-    }
-
-    jwt.verify(token, JWT_SECRET, async (err, decoded) => {
-      if (err || !decoded?.user) {
-        console.log('❌ Token verification failed:', err?.message);
-        return res.status(401).json({ errorMessage: 'User unauthorized!', status: false });
-      }
-
-      const username = decoded.user;
-      console.log(`👤 Fetching rider history for: ${username}`);
-      
-      // Find rides where user is a rider (not the driver)
-      const riderRides = await RideInfo.find({ 
-        "Riders.user": username,
-        Driver: { $ne: username }, // Exclude rides where user is the driver
-        Assigned: true
-      }).sort({ Date: -1 }); // Sort by date descending (newest first)
-      
-      console.log(`📊 Found ${riderRides.length} rider rides in database`);
-      
-      // Helper function to clean location data (remove MongoDB _id)
-      const cleanLocation = (location) => ({
-        lat: location.lat,
-        lng: location.lng
-      });
-
-      // Create a map to group rides by unique combination to avoid duplicates
-      const rideMap = new Map();
-      
-      // Process rider rides
-      riderRides.forEach((ride, index) => {
-        // Find the specific rider data for this user
-        const riderData = ride.Riders.find(rider => rider.user === username);
-        
-        if (riderData) {
-          // Create a unique key for this specific ride combination
-          const rideKey = `${ride.Driver}_${riderData.Source.lat}_${riderData.Source.lng}_${riderData.Destination.lat}_${riderData.Destination.lng}`;
-          
-          console.log(`✅ Processing rider ride ${index + 1}: Driver ${ride.Driver}, Date: ${ride.Date}, Key: ${rideKey}`);
-          
-          // Keep only the latest ride for each unique combination
-          if (!rideMap.has(rideKey) || ride.Date > rideMap.get(rideKey).Date) {
-            console.log(`✅ Keeping rider ride ${index + 1} for key ${rideKey}`);
-            rideMap.set(rideKey, {
-              _id: ride._id.toString(),
-              Date: ride.Date,
-              Time: ride.Time,
-              Role: 'rider',
-              Source: cleanLocation(riderData.Source),
-              Destination: cleanLocation(riderData.Destination),
-              Driver: ride.Driver
-            });
-          } else {
-            console.log(`⏭️ Skipping rider ride ${index + 1} for key ${rideKey} (duplicate)`);
-          }
-        } else {
-          console.log(`⚠️ Rider data not found in ride ${index + 1}`);
-        }
-      });
-      
-      // Convert map values to array and sort by date
-      const riderHistory = Array.from(rideMap.values())
-        .sort((a, b) => new Date(b.Date) - new Date(a.Date));
-      
-      console.log(`📋 Returning ${riderHistory.length} unique rider rides`);
-      console.log('🧑‍🤝‍🧑 === RIDER HISTORY REQUEST COMPLETED ===\n');
-      
-      res.status(200).json({ status: true, rides: riderHistory });
-    });
-  } catch (error) {
-    console.error('💥 Rider history error:', error);
-    console.log('🧑‍🤝‍🧑 === RIDER HISTORY REQUEST FAILED ===\n');
-    res.status(500).json({ errorMessage: `Failed to fetch rider history: ${error}`, status: false });
+    res.status(500).json({ errorMessage: `Failed to fetch history rides: ${error}`, status: false });
   }
 });
 
@@ -1235,8 +1093,7 @@ server.listen(SERVER_PORT, () => {
   console.log("📋 Available APIs:");
   console.log("   - POST /login");
   console.log("   - POST /register");
-  console.log("   - GET /driver-history");
-  console.log("   - GET /rider-history");
+  console.log("   - GET /history");
   console.log("   - GET /GetUser");
   console.log("   - POST /update-user");
   console.log("   - POST /update-database");

@@ -9,7 +9,7 @@ import {
   Avatar,
   Fade,
   Grow
-} from '@material-ui/core';
+} from '@mui/material';
 import { 
   Assignment,
   HourglassEmpty,
@@ -17,7 +17,7 @@ import {
   Error as ErrorIcon,
   DirectionsCar,
   People
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 
 class AssignmentStatus extends Component {
   constructor(props) {

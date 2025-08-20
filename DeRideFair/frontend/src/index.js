@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 //import { Route } from "react-router";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -11,7 +11,10 @@ import AssignmentHistory from "./AssignmentHistory";
 import ErrorBoundary from "./ErrorBoundary";
 import "./Login.css";
 
-ReactDOM.render(
+const container = document.getElementById("root");
+const root = createRoot(container);
+
+root.render(
   <ErrorBoundary>
     <BrowserRouter>
       <Routes>
@@ -22,6 +25,5 @@ ReactDOM.render(
         <Route path="/assignment-history" element={<AssignmentHistory />} />
       </Routes>
     </BrowserRouter>
-  </ErrorBoundary>,
-  document.getElementById("root")
+  </ErrorBoundary>
 );

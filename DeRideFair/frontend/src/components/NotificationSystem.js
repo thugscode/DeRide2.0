@@ -3,12 +3,10 @@ import {
   Snackbar, 
   IconButton,
   Slide,
-  Grow
-} from '@material-ui/core';
-import { 
+  Grow,
   Alert,
   AlertTitle
-} from '@material-ui/lab';
+} from '@mui/material';
 import { 
   Close,
   Wifi,
@@ -17,7 +15,7 @@ import {
   Error as ErrorIcon,
   Warning,
   Info
-} from '@material-ui/icons';
+} from '@mui/icons-material';
 
 function SlideTransition(props) {
   return <Slide {...props} direction="down" />;

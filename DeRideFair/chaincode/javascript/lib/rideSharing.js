@@ -10,7 +10,7 @@ const axios = require('axios');
 const polyline = require('@mapbox/polyline');
 
 // Fallback API key for when environment variable is not available (e.g., in Docker container)
-const FALLBACK_API_KEY = 'GoogleMapsAPIKey';
+const FALLBACK_API_KEY = 'YOUR_FALLBACK_GOOGLE_MAPS_API_KEY'; // Replace with your actual fallback API key
 
 // Helper function to get API key
 function getApiKey() {

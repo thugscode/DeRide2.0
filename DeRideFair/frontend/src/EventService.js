@@ -8,97 +8,126 @@ class EventService {
     this.reconnectInterval = 1000; // 1 seconds
     this.baseUrl = process.env.REACT_APP_BACKEND_URL || 'ws://localhost:2000';
     this.heartbeatInterval = null;
+    this.connectionState = {
+      status: 'disconnected',
+      health: false,
+      lastUpdate: new Date().toISOString(),
+      reconnectAttempts: 0,
+      messages: []
+    };
+  }
+
+  // Initialize the service
+  init() {
+    console.log('🔧 Initializing EventService...');
+    this.isConnected = false;
+    this.setConnectionStatus(false);
+    console.log('✅ EventService initialized');
   }
 
   connect(tokenParam = null) {
-    try {
-      const token = tokenParam || localStorage.getItem('token');
-      if (!token) {
-        console.error('❌ No authentication token found');
-        this.setConnectionStatus(false);
-        return;
-      }
+    return new Promise((resolve, reject) => {
+      try {
+        const token = tokenParam || sessionStorage.getItem('token');
+        if (!token) {
+          console.error('❌ No authentication token found');
+          this.setConnectionStatus(false);
+          reject(new Error('No authentication token found'));
+          return;
+        }
 
-      // Close existing connection if any
-      this.disconnect();
+        // Close existing connection if any
+        this.disconnect();
 
-      console.log('🔌 Connecting to WebSocket...');
-      
-      // Create WebSocket connection
-      const wsUrl = this.baseUrl.replace('http://', 'ws://').replace('https://', 'wss://');
-      this.websocket = new WebSocket(`${wsUrl}/ws`);
-
-      this.websocket.onopen = () => {
-        console.log('✅ WebSocket connection established');
+        console.log('🔌 Connecting to WebSocket...');
         
-        // Authenticate with token
-        this.websocket.send(JSON.stringify({
-          type: 'authenticate',
-          token: token
-        }));
-      };
+        // Create WebSocket connection
+        const wsUrl = this.baseUrl.replace('http://', 'ws://').replace('https://', 'wss://');
+        this.websocket = new WebSocket(`${wsUrl}/ws`);
 
-      this.websocket.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          console.log('📨 WebSocket message received:', data);
-          this.notifyListeners('message', data);
+        this.websocket.onopen = () => {
+          console.log('✅ WebSocket connection established');
           
-          // Handle specific event types
-          if (data.type === 'CONNECTED') {
-            this.isConnected = true;
-            this.reconnectAttempts = 0;
-            this.setConnectionStatus(true);
-            this.notifyListeners('connection', { status: 'connected' });
-            this.startHeartbeat();
-          } else if (data.type === 'HEARTBEAT') {
-            // Send pong response
-            if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
-              this.websocket.send(JSON.stringify({ type: 'pong' }));
+          // Authenticate with token
+          this.websocket.send(JSON.stringify({
+            type: 'authenticate',
+            token: token,
+            connectionId: Date.now().toString(),
+            timestamp: new Date().toISOString()
+          }));
+        };
+
+        this.websocket.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            console.log('📨 WebSocket message received:', data);
+            this.notifyListeners('message', data);
+            
+            // Handle specific event types
+            if (data.type === 'CONNECTED' || data.message === 'Real-time notifications connected') {
+              console.log('🎉 WebSocket connected and authenticated successfully!');
+              this.isConnected = true;
+              this.reconnectAttempts = 0;
+              this.setConnectionStatus(true);
+              this.notifyListeners('connection', { status: 'connected' });
+              this.startHeartbeat();
+              resolve();
+            } else if (data.type === 'HEARTBEAT') {
+              // Send pong response
+              if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
+                this.websocket.send(JSON.stringify({ 
+                  type: 'pong',
+                  timestamp: new Date().toISOString(),
+                  connectionId: Date.now().toString()
+                }));
+              }
+            } else if (data.type === 'error') {
+              console.error('❌ WebSocket error from server:', data.message);
+              this.setConnectionStatus(false);
+              this.notifyListeners('error', data);
+              reject(new Error(data.message));
             }
-          } else if (data.type === 'error') {
-            console.error('❌ WebSocket error from server:', data.message);
-            this.setConnectionStatus(false);
-            this.notifyListeners('error', data);
+            
+            // Notify type-specific listeners
+            if (data.type) {
+              this.notifyListeners(data.type, data);
+            }
+          } catch (error) {
+            console.error('❌ Error parsing WebSocket message:', error);
           }
+        };
+
+        this.websocket.onerror = (error) => {
+          console.error('❌ WebSocket connection error:', error);
+          this.isConnected = false;
+          this.setConnectionStatus(false);
+          this.stopHeartbeat();
+          this.notifyListeners('connection', { status: 'error', error });
           
-          // Notify type-specific listeners
-          if (data.type) {
-            this.notifyListeners(data.type, data);
-          }
-        } catch (error) {
-          console.error('❌ Error parsing WebSocket message:', error);
-        }
-      };
-
-      this.websocket.onerror = (error) => {
-        console.error('❌ WebSocket connection error:', error);
-        this.isConnected = false;
-        this.setConnectionStatus(false);
-        this.stopHeartbeat();
-        this.notifyListeners('connection', { status: 'error', error });
-        
-        // Attempt to reconnect
-        this.handleReconnect();
-      };
-
-      this.websocket.onclose = (event) => {
-        console.log('🔌 WebSocket connection closed:', event.code, event.reason);
-        this.isConnected = false;
-        this.setConnectionStatus(false);
-        this.stopHeartbeat();
-        this.notifyListeners('connection', { status: 'closed' });
-        
-        // Attempt to reconnect if not a clean close
-        if (event.code !== 1000) {
+          // Attempt to reconnect
           this.handleReconnect();
-        }
-      };
+          reject(error);
+        };
 
-    } catch (error) {
-      console.error('❌ Failed to create WebSocket connection:', error);
-      this.setConnectionStatus(false);
-    }
+        this.websocket.onclose = (event) => {
+          console.log('🔌 WebSocket connection closed:', event.code, event.reason);
+          this.isConnected = false;
+          this.setConnectionStatus(false);
+          this.stopHeartbeat();
+          this.notifyListeners('connection', { status: 'closed' });
+          
+          // Attempt to reconnect if not a clean close
+          if (event.code !== 1000) {
+            this.handleReconnect();
+          }
+        };
+
+      } catch (error) {
+        console.error('❌ Failed to create WebSocket connection:', error);
+        this.setConnectionStatus(false);
+        reject(error);
+      }
+    });
   }
 
   disconnect() {
@@ -139,9 +168,31 @@ class EventService {
   }
 
   setConnectionStatus(connected) {
+    console.log(`🔄 Setting connection status: ${connected ? 'CONNECTED' : 'DISCONNECTED'}`);
     this.isConnected = connected;
+    const state = this.getConnectionState();
+    const health = this.getConnectionHealth();
+    
+    console.log(`📊 Connection details: State=${state}, Health=${health.healthy}`);
+    
+    // Update internal connection state
+    this.connectionState = {
+      status: connected ? 'connected' : 'disconnected',
+      health: health.healthy,
+      lastUpdate: new Date().toISOString(),
+      reconnectAttempts: this.reconnectAttempts,
+      messages: []
+    };
+    
     // Notify all connection status listeners
-    this.notifyListeners('connectionStatus', { connected });
+    this.notifyListeners('connectionState', { 
+      connected,
+      state,
+      health: health.healthy,
+      reconnectAttempts: this.reconnectAttempts,
+      maxReconnectAttempts: this.maxReconnectAttempts,
+      message: connected ? 'Real-time notifications connected' : 'Disconnected from server'
+    });
   }
 
   // Event listener management
@@ -192,9 +243,44 @@ class EventService {
   getConnectionStatus() {
     return this.isConnected;
   }
+
+  // Get connection health information
+  getConnectionHealth() {
+    const isHealthy = this.isConnected && 
+                     this.websocket && 
+                     this.websocket.readyState === WebSocket.OPEN;
+    
+    return {
+      healthy: isHealthy,
+      connected: this.isConnected,
+      websocketState: this.websocket ? this.websocket.readyState : -1,
+      reconnectAttempts: this.reconnectAttempts,
+      maxReconnectAttempts: this.maxReconnectAttempts,
+      timeSinceLastActivity: this.isConnected ? 0 : null
+    };
+  }
+
+  // Get connection state for display
+  getConnectionState() {
+    if (!this.websocket) return 'DISCONNECTED';
+    
+    switch (this.websocket.readyState) {
+      case WebSocket.CONNECTING:
+        return 'CONNECTING';
+      case WebSocket.OPEN:
+        return this.isConnected ? 'CONNECTED' : 'AUTHENTICATING';
+      case WebSocket.CLOSING:
+        return 'CLOSING';
+      case WebSocket.CLOSED:
+        return 'DISCONNECTED';
+      default:
+        return 'UNKNOWN';
+    }
+  }
 }
 
 // Create singleton instance
 const eventService = new EventService();
+eventService.init();
 
 export default eventService;

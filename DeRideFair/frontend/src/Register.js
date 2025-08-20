@@ -1,8 +1,8 @@
 import React from "react";
 import swal from "sweetalert";
-import { Button, TextField, Link } from "@material-ui/core";
+import { Button, TextField, Link } from "@mui/material";
 import { withRouter } from "./utils";
-const axios = require("axios");
+import axios from "axios";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:2000';
 

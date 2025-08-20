@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Button, Box } from '@material-ui/core';
+import { Typography, Button, Box } from '@mui/material';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {

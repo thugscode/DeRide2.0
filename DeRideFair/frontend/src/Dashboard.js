@@ -1,7 +1,7 @@
 import React, { Component, createRef } from 'react';
-import {Box, IconButton, Input, Typography,
+import {Box, IconButton, TextField, Typography,
   Card, Button, RadioGroup, FormControlLabel, Radio, FormControl, Dialog, DialogTitle, DialogContent, DialogActions
-} from '@material-ui/core';
+} from '@mui/material';
 import swal from 'sweetalert';
 import { withRouter } from './utils';
 import { VscAccount } from "react-icons/vsc";
@@ -10,12 +10,9 @@ import { FaLocationArrow, FaWindowMaximize, FaWindowMinimize } from 'react-icons
 import { GoogleMap, Marker, Autocomplete, DirectionsRenderer, LoadScript } from '@react-google-maps/api';
 import axios from 'axios';
 import eventService from './EventService';
-<<<<<<< Updated upstream
-=======
 import ConnectionStatus from './components/ConnectionStatus';
 import AssignmentStatus from './components/AssignmentStatus';
 import NotificationSystem from './components/NotificationSystem';
->>>>>>> Stashed changes
 
 const center = {
   lat: 22.3146362,
@@ -48,10 +45,6 @@ class Dashboard extends Component {
       duration: '',
       assignmentTriggered: false,
       showRidersDialog: false,
-<<<<<<< Updated upstream
-      isConnectedToEvents: false,
-      notifications: [],
-=======
       websocketConnected: false,
       assignmentInProgress: false,
       waitingForAssignment: false,
@@ -59,7 +52,6 @@ class Dashboard extends Component {
       connectionState: 'DISCONNECTED',
       connectionMessage: '',
       lastAssignmentUpdate: null,
->>>>>>> Stashed changes
     };
     this.originRef = createRef();
     this.destinationRef = createRef();
@@ -75,10 +67,6 @@ class Dashboard extends Component {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       this.fetchUserData(token);
       
-<<<<<<< Updated upstream
-      // Connect to real-time events
-      this.connectToEvents(token);
-=======
       // Initialize WebSocket connection
       this.initializeWebSocket(token);
     }
@@ -98,7 +86,6 @@ class Dashboard extends Component {
           databaseUpdated: parsedState.databaseUpdated !== undefined ? parsedState.databaseUpdated : true
         });
       }
->>>>>>> Stashed changes
     }
   }
 
@@ -225,35 +212,6 @@ class Dashboard extends Component {
       return;
     }
 
-<<<<<<< Updated upstream
-    // For drivers, build waypoints from assigned riders' source and destination points
-    let waypoints = [];
-    if (
-      this.state.fetchedData.Role === 'driver' &&
-      this.state.fetchedData.Riders &&
-      Array.isArray(this.state.fetchedData.Riders)
-    ) {
-      this.state.fetchedData.Riders.forEach((rider) => {
-        let riderData;
-        if (typeof rider === 'object' && rider !== null && rider.Source && rider.Destination) {
-          riderData = rider;
-        } else if (typeof rider === 'object' && rider !== null) {
-          // Handle the format where rider is an object with user as key
-          const entries = Object.entries(rider);
-          if (entries.length > 0) {
-            const [_, details] = entries[0];
-            riderData = details;
-          }
-        }
-        
-        if (riderData?.Source) {
-          waypoints.push({
-            location: { 
-              lat: parseFloat(riderData.Source.lat), 
-              lng: parseFloat(riderData.Source.lng) 
-            },
-            stopover: true,
-=======
     // For drivers, use Google Maps API with waypoints for all riders
     if (this.state.fetchedData.Role === 'driver') {
       await this.showDriverRouteWithWaypoints();
@@ -421,25 +379,21 @@ class Dashboard extends Component {
             directionsResponse: results,
             distance: results.routes[0].legs[0].distance.text,
             duration: results.routes[0].legs[0].duration.text,
->>>>>>> Stashed changes
+          });
+        } catch (error) {
+          console.error('Error showing direct route:', error);
+          swal({
+            text: 'Unable to show route: ' + error.message,
+            icon: "error",
+            type: "error",
           });
         }
-        if (riderData?.Destination) {
-          waypoints.push({
-            location: { 
-              lat: parseFloat(riderData.Destination.lat), 
-              lng: parseFloat(riderData.Destination.lng) 
-            },
-            stopover: true,
-          });
-        }
-      });
-      
-      // Limit waypoints to 25 (Google Maps API limit)
-      if (waypoints.length > 25) {
-        waypoints = waypoints.slice(0, 25);
       }
+      return;
     }
+
+    // Initialize waypoints array
+    let waypoints = [];
 
     // Use driver's/user's source and destination as origin and destination
     const origin = this.state.fetchedData.Source
@@ -607,139 +561,6 @@ class Dashboard extends Component {
   
 
   componentWillUnmount = () => {
-<<<<<<< Updated upstream
-    // Disconnect from event service
-    eventService.disconnect();
-  }
-
-  connectToEvents = (token) => {
-    console.log('🔌 Setting up real-time WebSocket event listeners...');
-    
-    // Connect to WebSocket
-    eventService.connect(token);
-    
-    // Set up event listeners
-    eventService.on('CONNECTED', this.handleEventConnected);
-    eventService.on('ASSIGNMENT_TRIGGERED', this.handleAssignmentTriggered);
-    eventService.on('ASSIGNMENT_STARTING', this.handleAssignmentStarting);
-    eventService.on('ASSIGNMENT_COMPLETED', this.handleAssignmentCompleted);
-    eventService.on('ASSIGNMENT_FAILED', this.handleAssignmentFailed);
-    eventService.on('RIDE_UPDATED', this.handleRideUpdated);
-    eventService.on('RIDE_SAVED', this.handleRideSaved);
-    eventService.on('connection', this.handleConnectionStatus);
-    eventService.on('error', this.handleEventError);
-  }
-
-  handleEventConnected = (data) => {
-    console.log('📡 Connected to real-time WebSocket notifications:', data);
-    this.setState({ isConnectedToEvents: true });
-  }
-
-  handleAssignmentTriggered = (data) => {
-    console.log('🎯 Assignment triggered notification:', data);
-    
-    swal({
-      title: "Assignment Triggered!",
-      text: data.message,
-      icon: "info",
-      timer: 3000,
-      buttons: false
-    });
-  }
-
-  handleAssignmentStarting = (data) => {
-    console.log('🚀 Assignment starting notification:', data);
-    
-    swal({
-      title: "Assignment Starting!",
-      text: data.message,
-      icon: "info",
-      timer: 3000,
-      buttons: false
-    });
-  }
-
-  handleAssignmentCompleted = (data) => {
-    console.log('🎉 Assignment completed notification:', data);
-    
-    swal({
-      title: "Assignment Complete!",
-      text: data.message,
-      icon: "success",
-      buttons: {
-        check: {
-          text: "Check My Ride",
-          value: "check",
-          className: "swal-button--confirm",
-        },
-        later: {
-          text: "Later",
-          value: "later",
-        }
-      },
-    }).then((value) => {
-      if (value === "check") {
-        this.fetchLatestRideAndUpdateDatabase();
-      }
-    });
-  }
-
-  handleAssignmentFailed = (data) => {
-    console.log('❌ Assignment failed notification:', data);
-    
-    swal({
-      title: "Assignment Failed",
-      text: data.message,
-      icon: "error",
-      buttons: {
-        retry: {
-          text: "Try Again",
-          value: "retry",
-          className: "swal-button--confirm",
-        },
-        ok: {
-          text: "OK",
-          value: "ok",
-        }
-      },
-    }).then((value) => {
-      if (value === "retry") {
-        // Reset form to allow user to resubmit
-        this.setState({ formSubmitted: false, assignmentTriggered: false });
-      }
-    });
-  }
-
-  handleRideUpdated = (data) => {
-    console.log('📝 Ride updated notification:', data);
-    swal({
-      text: data.message,
-      icon: "success",
-      type: "success",
-    });
-  }
-
-  handleRideSaved = (data) => {
-    console.log('💾 Ride saved notification:', data);
-    swal({
-      text: data.message,
-      icon: "success",
-      type: "success",
-    });
-    
-    // Mark as database updated since we got confirmation
-    this.setState({ databaseUpdated: true });
-  }
-
-  handleConnectionStatus = (data) => {
-    console.log('🔌 Connection status:', data);
-    this.setState({ isConnectedToEvents: data.status === 'connected' });
-  }
-
-  handleEventError = (data) => {
-    console.error('❌ Event service error:', data);
-    this.setState({ isConnectedToEvents: false });
-=======
     // Clean up WebSocket event listeners
     eventService.removeEventListener('connectionState', this.handleConnectionState);
     eventService.removeEventListener('ASSIGNMENT_STARTING', this.handleAssignmentStarting);
@@ -749,18 +570,13 @@ class Dashboard extends Component {
     
     // Disconnect WebSocket
     eventService.disconnect();
->>>>>>> Stashed changes
   }
 
   logOut = () => {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('dashboardState');
     
-<<<<<<< Updated upstream
-    // Disconnect from event service
-=======
     // Clean up WebSocket
->>>>>>> Stashed changes
     eventService.disconnect();
     
     // Clear form state
@@ -874,34 +690,6 @@ class Dashboard extends Component {
         type: "success",
       });
 
-<<<<<<< Updated upstream
-      // Event-driven: If assignment is triggered, wait for notification
-      if (response.data.assignmentTriggered) {
-        this.setState({ 
-          formSubmitted: true, 
-          databaseUpdated: false, 
-          assignmentTriggered: true 
-        });
-        
-        swal({
-          title: "Assignment Triggered!",
-          text: "Assignment process has been started. You will be notified when it's complete.",
-          icon: "info",
-          type: "info",
-        });
-      } else {
-        this.setState({ 
-          formSubmitted: true, 
-          databaseUpdated: false, 
-          assignmentTriggered: false 
-        });
-        
-        swal({
-          text: "Ride request submitted. Please wait for other users to join for assignment.",
-          icon: "info",
-          type: "info",
-        });
-=======
       this.setState({ 
         formSubmitted: true, 
         databaseUpdated: false,
@@ -913,7 +701,6 @@ class Dashboard extends Component {
       // WebSocket will handle real-time notifications
       if (response.data.assignmentTriggered) {
         console.log('🚗 Assignment triggered by server, waiting for WebSocket notifications...');
->>>>>>> Stashed changes
       }
 
     } catch (error) {
@@ -970,99 +757,6 @@ class Dashboard extends Component {
     });
   }
 
-<<<<<<< Updated upstream
-  fetchLatestRideAndUpdateDatabase = () => {
-    // Event-driven: Fetch latest ride and update database once assignment is done
-    if (this.state.loading) {
-      return;
-    }
-    
-    this.setState({ loading: true });
-    
-    // Show loading message
-    swal({
-      title: "Processing Assignment",
-      text: "Fetching your assigned ride...",
-      icon: "info",
-      buttons: false,
-      closeOnClickOutside: false,
-      closeOnEsc: false
-    });
-    
-    axios.get(`${API_BASE_URL}/GetUser`, {
-      headers: {
-        'Authorization': `Bearer ${this.state.token}`,
-        'content-type': 'application/json'
-      }
-    }).then((res) => {
-      this.setState({ loading: false });
-      const fetchedData = res.data.result;
-      
-      // Update source and destination addresses from coordinates
-      this.getAddress(fetchedData.Source, 'source');
-      this.getAddress(fetchedData.Destination, 'destination');
-      
-      if (fetchedData.Assigned) {
-        this.setState({ 
-          fetchedData: fetchedData, 
-          formSubmitted: false
-        });
-        
-        swal.close();
-        // Automatically update database since assignment is complete
-        this.updateDatabase();
-      } else {
-        swal.close();
-        swal({
-          text: 'Assignment is still in progress. Please check back in a moment.',
-          icon: "info",
-          type: "info",
-        });
-        
-        // Retry after a delay if assignment not complete
-        setTimeout(() => {
-          this.fetchLatestRideAndUpdateDatabase();
-        }, 5000);
-      }
-    }).catch((err) => {
-      this.setState({ loading: false });
-      swal.close();
-      console.error('Failed to fetch latest ride:', err);
-      
-      const errorMessage = err.response?.data?.errorMessage || "Failed to fetch ride data";
-      
-      if (err.response?.status === 401) {
-        swal({
-          title: "Session Expired",
-          text: "Your session has expired. Please login again.",
-          icon: "warning",
-          buttons: {
-            login: {
-              text: "Go to Login",
-              value: "login",
-              className: "swal-button--confirm",
-            }
-          },
-        }).then((value) => {
-          if (value === "login") {
-            sessionStorage.removeItem('token');
-            sessionStorage.removeItem('dashboardState');
-            this.props.navigate("/");
-          }
-        });
-      } else {
-        swal({
-          text: errorMessage,
-          icon: "error",
-          type: "error",
-        });
-      }
-    });
-  };
-
-  // Manual fetch method for "Get Ride" button
-=======
->>>>>>> Stashed changes
   fetchLatestRide = () => {
     // Prevent multiple concurrent calls
     if (this.state.loading) {
@@ -1100,9 +794,6 @@ class Dashboard extends Component {
       
       // Automatically update database if not already updated
       if (!this.state.databaseUpdated) {
-<<<<<<< Updated upstream
-        this.updateDatabase();
-=======
         this.setState({ 
           fetchedData: fetchedData, 
           waitingForAssignment: false,
@@ -1115,7 +806,6 @@ class Dashboard extends Component {
           waitingForAssignment: false,
           formSubmitted: false
         });
->>>>>>> Stashed changes
       }
     }).catch((err) => {
       this.setState({ loading: false });
@@ -1266,11 +956,7 @@ class Dashboard extends Component {
         googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
         libraries={['places']}
         onLoad={() => {
-<<<<<<< Updated upstream
-          console.log('Google Maps script loaded successfully');
-=======
           console.log('Google Maps loaded successfully');
->>>>>>> Stashed changes
         }}
         onError={(error) => {
           console.error('Google Maps loading error:', error);
@@ -1422,7 +1108,7 @@ class Dashboard extends Component {
                           color: this.state.websocketConnected ? '#4CAF50' : '#f44336',
                           fontSize: '10px'
                         }}>
-                          {this.state.websocketConnected ? '🟢 Real-time' : '🔴 Offline'}
+                          
                         </Typography>
                       </Card>
                     )}
@@ -1469,14 +1155,6 @@ class Dashboard extends Component {
                         <p>Threshold: {this.state.threshold}</p>
                       </div>
                     )}
-<<<<<<< Updated upstream
-                    {this.state.assignmentTriggered && (
-                      <div style={{ margin: '20px 0', textAlign: 'center' }}>
-                        <Typography variant="body2" style={{ color: '#4CAF50', fontWeight: 'bold' }}>
-                          <span role="img" aria-label="loading">🔄</span> Assignment in progress... Please wait.
-                        </Typography>
-                      </div>
-=======
                     
                     {/* Professional Assignment Status */}
                     {(this.state.waitingForAssignment || this.state.assignmentStatus) && (
@@ -1487,7 +1165,6 @@ class Dashboard extends Component {
                         estimatedTime="2-3 minutes"
                         style={{ margin: '16px 0' }}
                       />
->>>>>>> Stashed changes
                     )}
 
                     <Button
@@ -1515,7 +1192,7 @@ class Dashboard extends Component {
                           color: this.state.websocketConnected ? '#4CAF50' : '#f44336',
                           fontSize: '10px'
                         }}>
-                          {this.state.websocketConnected ? '🟢 Real-time' : '🔴 Offline'}
+                          
                         </Typography>
                       </Card>
                     )}
@@ -1645,7 +1322,7 @@ class Dashboard extends Component {
                           color: this.state.websocketConnected ? '#4CAF50' : '#f44336',
                           fontSize: '10px'
                         }}>
-                          {this.state.websocketConnected ? '🟢 Real-time' : '🔴 Offline'}
+                          
                         </Typography>
                       </Card>
                     )}
@@ -1680,8 +1357,8 @@ class Dashboard extends Component {
                           this.setState({ source: place.formatted_address });
                         }}
                       >
-                        <Input
-                          id="standard-basic"
+                        <TextField
+                          variant="standard"
                           type="text"
                           autoComplete="off"
                           name="source"
@@ -1700,8 +1377,8 @@ class Dashboard extends Component {
                           this.setState({ destination: place.formatted_address });
                         }}
                       >
-                        <Input
-                          id="standard-basic"
+                        <TextField
+                          variant="standard"
                           type="text"
                           autoComplete="off"
                           name="destination"
@@ -1724,8 +1401,8 @@ class Dashboard extends Component {
                           <FormControlLabel value="rider" control={<Radio />} label="Rider" />
                         </RadioGroup>
                       </FormControl><br />
-                      <Input
-                        id="standard-basic"
+                      <TextField
+                        variant="standard"
                         type="number"
                         autoComplete="off"
                         name="seats"
@@ -1737,8 +1414,8 @@ class Dashboard extends Component {
                         InputProps={{ style: textFieldStyle }}
                         disabled={this.state.role === 'rider'}
                       /><br />
-                      <Input
-                        id="standard-basic"
+                      <TextField
+                        variant="standard"
                         type="number"
                         autoComplete="off"
                         name="threshold"
