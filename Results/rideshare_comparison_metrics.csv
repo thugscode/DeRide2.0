@@ -1,4 +1,3 @@
-Algorithm,Variance,Total_Riders_Accommodated,Standard_Deviation,Utilization_Rate_Percent,Drivers_with_Zero_Load,Gini_Coefficient
-DeRide,4.33,335,2.08,67.0,22,0.319
-DeRideFair,3.21,254,1.87,50.8,23,0.448
-SCIP,4.73,345,2.17,69.0,26,0.307
+System,Total_Riders,Mean_Seats,Std_Dev,Variance,Gini_Coefficient,Coeff_Variation,Empty_Drivers,Full_Drivers,Utilization_Rate,Q1,Median,Q3,IQR,Range
+DeRideFair,238,2.38,1.482422260213249,2.1975757575757577,0.34974789915966387,0.6228664958879198,13,9,0.476,1.0,2.0,3.0,2.0,5
+DeRide,327,3.27,1.5032288480790172,2.2596969696969693,0.25458715596330284,0.4597030116449594,5,27,0.654,2.0,4.0,5.0,3.0,5

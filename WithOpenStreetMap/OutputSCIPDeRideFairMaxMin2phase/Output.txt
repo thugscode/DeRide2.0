@@ -1,0 +1,629 @@
+=== MAX–MIN FAIRNESS (CLASSICAL) FOR RIDESHARE ===
+Drivers: 100, Riders: 500, Graph nodes: 156, edges: 410
+Phase 1 (max-min) optimal min_load z*: 0
+Phase 1 load per driver: d1:0, d2:0, d3:0, d4:0, d5:0, d6:0, d7:0, d8:0, d9:0, d10:0, d11:0, d12:0, d13:0, d14:0, d15:0, d16:0, d17:0, d18:0, d19:0, d20:0, d21:0, d22:0, d23:0, d24:0, d25:0, d26:0, d27:0, d28:0, d29:0, d30:0, d31:0, d32:0, d33:0, d34:0, d35:0, d36:0, d37:0, d38:0, d39:0, d40:0, d41:0, d42:0, d43:0, d44:0, d45:0, d46:0, d47:0, d48:0, d49:0, d50:0, d51:0, d52:0, d53:0, d54:0, d55:0, d56:0, d57:0, d58:0, d59:0, d60:0, d61:0, d62:0, d63:0, d64:0, d65:0, d66:0, d67:0, d68:0, d69:0, d70:0, d71:0, d72:0, d73:0, d74:0, d75:0, d76:0, d77:0, d78:0, d79:0, d80:0, d81:0, d82:0, d83:0, d84:0, d85:0, d86:0, d87:0, d88:0, d89:0, d90:0, d91:0, d92:0, d93:0, d94:0, d95:0, d96:0, d97:0, d98:0, d99:0, d100:0
+Phase 2 (efficiency under fairness) optimal.
+
+=== FINAL RESULTS ===
+Min driver load (z): 0
+Total riders assigned: 345
+
+Assignments:
+ Rider r1 -> Driver d25
+ Rider r2 -> Driver d3
+ Rider r3 -> Driver d58
+ Rider r4 -> Driver d38
+ Rider r5 -> Driver d28
+ Rider r6 -> Driver d87
+ Rider r7 -> Driver d73
+ Rider r8 -> Driver d17
+ Rider r9 -> Driver d74
+ Rider r10 -> Driver d51
+ Rider r11 -> Driver d45
+ Rider r12 -> Driver d86
+ Rider r13 -> Driver d59
+ Rider r14 -> Driver d70
+ Rider r15 -> Driver d3
+ Rider r16 -> Driver d59
+ Rider r17 -> Driver d3
+ Rider r18 -> Driver d30
+ Rider r19 -> Driver d45
+ Rider r20 -> Driver d29
+ Rider r21 -> Driver None
+ Rider r22 -> Driver d3
+ Rider r23 -> Driver d5
+ Rider r24 -> Driver d16
+ Rider r25 -> Driver d84
+ Rider r26 -> Driver d86
+ Rider r27 -> Driver d45
+ Rider r28 -> Driver d29
+ Rider r29 -> Driver d28
+ Rider r30 -> Driver d28
+ Rider r31 -> Driver d57
+ Rider r32 -> Driver d72
+ Rider r33 -> Driver d20
+ Rider r34 -> Driver d37
+ Rider r35 -> Driver d70
+ Rider r36 -> Driver d95
+ Rider r37 -> Driver d45
+ Rider r38 -> Driver None
+ Rider r39 -> Driver d98
+ Rider r40 -> Driver d17
+ Rider r41 -> Driver d28
+ Rider r42 -> Driver d100
+ Rider r43 -> Driver d77
+ Rider r44 -> Driver d10
+ Rider r45 -> Driver d52
+ Rider r46 -> Driver d3
+ Rider r47 -> Driver None
+ Rider r48 -> Driver d14
+ Rider r49 -> Driver d48
+ Rider r50 -> Driver d95
+ Rider r51 -> Driver d9
+ Rider r52 -> Driver None
+ Rider r53 -> Driver d93
+ Rider r54 -> Driver d9
+ Rider r55 -> Driver d9
+ Rider r56 -> Driver d23
+ Rider r57 -> Driver d20
+ Rider r58 -> Driver d98
+ Rider r59 -> Driver d95
+ Rider r60 -> Driver None
+ Rider r61 -> Driver d98
+ Rider r62 -> Driver d95
+ Rider r63 -> Driver d45
+ Rider r64 -> Driver d9
+ Rider r65 -> Driver None
+ Rider r66 -> Driver d72
+ Rider r67 -> Driver d28
+ Rider r68 -> Driver d68
+ Rider r69 -> Driver d93
+ Rider r70 -> Driver None
+ Rider r71 -> Driver d42
+ Rider r72 -> Driver d63
+ Rider r73 -> Driver d80
+ Rider r74 -> Driver d30
+ Rider r75 -> Driver d73
+ Rider r76 -> Driver d29
+ Rider r77 -> Driver d9
+ Rider r78 -> Driver d56
+ Rider r79 -> Driver d7
+ Rider r80 -> Driver d15
+ Rider r81 -> Driver d55
+ Rider r82 -> Driver d30
+ Rider r83 -> Driver d68
+ Rider r84 -> Driver d65
+ Rider r85 -> Driver d96
+ Rider r86 -> Driver d6
+ Rider r87 -> Driver d6
+ Rider r88 -> Driver None
+ Rider r89 -> Driver d86
+ Rider r90 -> Driver d86
+ Rider r91 -> Driver d87
+ Rider r92 -> Driver d89
+ Rider r93 -> Driver None
+ Rider r94 -> Driver d43
+ Rider r95 -> Driver d68
+ Rider r96 -> Driver None
+ Rider r97 -> Driver d30
+ Rider r98 -> Driver d18
+ Rider r99 -> Driver d42
+ Rider r100 -> Driver d66
+ Rider r101 -> Driver d84
+ Rider r102 -> Driver d48
+ Rider r103 -> Driver d29
+ Rider r104 -> Driver None
+ Rider r105 -> Driver None
+ Rider r106 -> Driver d16
+ Rider r107 -> Driver d78
+ Rider r108 -> Driver d80
+ Rider r109 -> Driver None
+ Rider r110 -> Driver d39
+ Rider r111 -> Driver d56
+ Rider r112 -> Driver None
+ Rider r113 -> Driver d97
+ Rider r114 -> Driver d89
+ Rider r115 -> Driver d5
+ Rider r116 -> Driver d8
+ Rider r117 -> Driver d57
+ Rider r118 -> Driver None
+ Rider r119 -> Driver d8
+ Rider r120 -> Driver None
+ Rider r121 -> Driver None
+ Rider r122 -> Driver d15
+ Rider r123 -> Driver d78
+ Rider r124 -> Driver d61
+ Rider r125 -> Driver d46
+ Rider r126 -> Driver d10
+ Rider r127 -> Driver None
+ Rider r128 -> Driver None
+ Rider r129 -> Driver d49
+ Rider r130 -> Driver None
+ Rider r131 -> Driver d85
+ Rider r132 -> Driver d8
+ Rider r133 -> Driver d32
+ Rider r134 -> Driver d89
+ Rider r135 -> Driver None
+ Rider r136 -> Driver d6
+ Rider r137 -> Driver d40
+ Rider r138 -> Driver None
+ Rider r139 -> Driver None
+ Rider r140 -> Driver None
+ Rider r141 -> Driver None
+ Rider r142 -> Driver d15
+ Rider r143 -> Driver d75
+ Rider r144 -> Driver d49
+ Rider r145 -> Driver d25
+ Rider r146 -> Driver d46
+ Rider r147 -> Driver None
+ Rider r148 -> Driver None
+ Rider r149 -> Driver None
+ Rider r150 -> Driver None
+ Rider r151 -> Driver d22
+ Rider r152 -> Driver d23
+ Rider r153 -> Driver None
+ Rider r154 -> Driver d43
+ Rider r155 -> Driver None
+ Rider r156 -> Driver None
+ Rider r157 -> Driver d48
+ Rider r158 -> Driver None
+ Rider r159 -> Driver d57
+ Rider r160 -> Driver d74
+ Rider r161 -> Driver d73
+ Rider r162 -> Driver None
+ Rider r163 -> Driver d40
+ Rider r164 -> Driver None
+ Rider r165 -> Driver d6
+ Rider r166 -> Driver None
+ Rider r167 -> Driver d78
+ Rider r168 -> Driver d46
+ Rider r169 -> Driver d89
+ Rider r170 -> Driver d6
+ Rider r171 -> Driver None
+ Rider r172 -> Driver None
+ Rider r173 -> Driver d51
+ Rider r174 -> Driver d60
+ Rider r175 -> Driver d93
+ Rider r176 -> Driver None
+ Rider r177 -> Driver None
+ Rider r178 -> Driver d34
+ Rider r179 -> Driver None
+ Rider r180 -> Driver None
+ Rider r181 -> Driver None
+ Rider r182 -> Driver d40
+ Rider r183 -> Driver d42
+ Rider r184 -> Driver d57
+ Rider r185 -> Driver None
+ Rider r186 -> Driver d85
+ Rider r187 -> Driver d42
+ Rider r188 -> Driver None
+ Rider r189 -> Driver d43
+ Rider r190 -> Driver d51
+ Rider r191 -> Driver d43
+ Rider r192 -> Driver d20
+ Rider r193 -> Driver None
+ Rider r194 -> Driver None
+ Rider r195 -> Driver None
+ Rider r196 -> Driver None
+ Rider r197 -> Driver d80
+ Rider r198 -> Driver None
+ Rider r199 -> Driver None
+ Rider r200 -> Driver d56
+ Rider r201 -> Driver d7
+ Rider r202 -> Driver d66
+ Rider r203 -> Driver d55
+ Rider r204 -> Driver d72
+ Rider r205 -> Driver d46
+ Rider r206 -> Driver d55
+ Rider r207 -> Driver d78
+ Rider r208 -> Driver d61
+ Rider r209 -> Driver d7
+ Rider r210 -> Driver d34
+ Rider r211 -> Driver None
+ Rider r212 -> Driver d51
+ Rider r213 -> Driver d72
+ Rider r214 -> Driver None
+ Rider r215 -> Driver d32
+ Rider r216 -> Driver None
+ Rider r217 -> Driver d21
+ Rider r218 -> Driver None
+ Rider r219 -> Driver d22
+ Rider r220 -> Driver None
+ Rider r221 -> Driver None
+ Rider r222 -> Driver d82
+ Rider r223 -> Driver d21
+ Rider r224 -> Driver d86
+ Rider r225 -> Driver None
+ Rider r226 -> Driver None
+ Rider r227 -> Driver None
+ Rider r228 -> Driver d32
+ Rider r229 -> Driver d35
+ Rider r230 -> Driver None
+ Rider r231 -> Driver None
+ Rider r232 -> Driver d77
+ Rider r233 -> Driver d68
+ Rider r234 -> Driver d74
+ Rider r235 -> Driver d27
+ Rider r236 -> Driver d39
+ Rider r237 -> Driver None
+ Rider r238 -> Driver d17
+ Rider r239 -> Driver d34
+ Rider r240 -> Driver d15
+ Rider r241 -> Driver None
+ Rider r242 -> Driver None
+ Rider r243 -> Driver d15
+ Rider r244 -> Driver None
+ Rider r245 -> Driver d96
+ Rider r246 -> Driver d75
+ Rider r247 -> Driver None
+ Rider r248 -> Driver d85
+ Rider r249 -> Driver d32
+ Rider r250 -> Driver d60
+ Rider r251 -> Driver d72
+ Rider r252 -> Driver None
+ Rider r253 -> Driver d14
+ Rider r254 -> Driver None
+ Rider r255 -> Driver d93
+ Rider r256 -> Driver d16
+ Rider r257 -> Driver d55
+ Rider r258 -> Driver d82
+ Rider r259 -> Driver None
+ Rider r260 -> Driver None
+ Rider r261 -> Driver None
+ Rider r262 -> Driver d68
+ Rider r263 -> Driver None
+ Rider r264 -> Driver None
+ Rider r265 -> Driver None
+ Rider r266 -> Driver None
+ Rider r267 -> Driver d20
+ Rider r268 -> Driver d89
+ Rider r269 -> Driver None
+ Rider r270 -> Driver None
+ Rider r271 -> Driver d8
+ Rider r272 -> Driver None
+ Rider r273 -> Driver None
+ Rider r274 -> Driver None
+ Rider r275 -> Driver d70
+ Rider r276 -> Driver d48
+ Rider r277 -> Driver d52
+ Rider r278 -> Driver d17
+ Rider r279 -> Driver d38
+ Rider r280 -> Driver None
+ Rider r281 -> Driver d25
+ Rider r282 -> Driver d52
+ Rider r283 -> Driver d58
+ Rider r284 -> Driver d49
+ Rider r285 -> Driver None
+ Rider r286 -> Driver d34
+ Rider r287 -> Driver d82
+ Rider r288 -> Driver None
+ Rider r289 -> Driver None
+ Rider r290 -> Driver None
+ Rider r291 -> Driver d78
+ Rider r292 -> Driver d85
+ Rider r293 -> Driver d39
+ Rider r294 -> Driver d98
+ Rider r295 -> Driver d75
+ Rider r296 -> Driver d23
+ Rider r297 -> Driver None
+ Rider r298 -> Driver d39
+ Rider r299 -> Driver None
+ Rider r300 -> Driver d16
+ Rider r301 -> Driver None
+ Rider r302 -> Driver d80
+ Rider r303 -> Driver None
+ Rider r304 -> Driver d65
+ Rider r305 -> Driver None
+ Rider r306 -> Driver d63
+ Rider r307 -> Driver None
+ Rider r308 -> Driver d37
+ Rider r309 -> Driver d85
+ Rider r310 -> Driver None
+ Rider r311 -> Driver None
+ Rider r312 -> Driver d52
+ Rider r313 -> Driver d80
+ Rider r314 -> Driver None
+ Rider r315 -> Driver None
+ Rider r316 -> Driver d77
+ Rider r317 -> Driver d88
+ Rider r318 -> Driver d22
+ Rider r319 -> Driver d21
+ Rider r320 -> Driver None
+ Rider r321 -> Driver None
+ Rider r322 -> Driver None
+ Rider r323 -> Driver None
+ Rider r324 -> Driver None
+ Rider r325 -> Driver None
+ Rider r326 -> Driver d66
+ Rider r327 -> Driver d60
+ Rider r328 -> Driver d74
+ Rider r329 -> Driver d22
+ Rider r330 -> Driver None
+ Rider r331 -> Driver None
+ Rider r332 -> Driver d60
+ Rider r333 -> Driver None
+ Rider r334 -> Driver d57
+ Rider r335 -> Driver None
+ Rider r336 -> Driver None
+ Rider r337 -> Driver d91
+ Rider r338 -> Driver d65
+ Rider r339 -> Driver d66
+ Rider r340 -> Driver None
+ Rider r341 -> Driver None
+ Rider r342 -> Driver d91
+ Rider r343 -> Driver None
+ Rider r344 -> Driver None
+ Rider r345 -> Driver None
+ Rider r346 -> Driver None
+ Rider r347 -> Driver d38
+ Rider r348 -> Driver None
+ Rider r349 -> Driver None
+ Rider r350 -> Driver None
+ Rider r351 -> Driver None
+ Rider r352 -> Driver None
+ Rider r353 -> Driver None
+ Rider r354 -> Driver None
+ Rider r355 -> Driver d27
+ Rider r356 -> Driver None
+ Rider r357 -> Driver None
+ Rider r358 -> Driver d97
+ Rider r359 -> Driver d75
+ Rider r360 -> Driver d18
+ Rider r361 -> Driver None
+ Rider r362 -> Driver None
+ Rider r363 -> Driver d37
+ Rider r364 -> Driver d73
+ Rider r365 -> Driver d25
+ Rider r366 -> Driver d2
+ Rider r367 -> Driver None
+ Rider r368 -> Driver None
+ Rider r369 -> Driver d56
+ Rider r370 -> Driver None
+ Rider r371 -> Driver None
+ Rider r372 -> Driver d60
+ Rider r373 -> Driver d5
+ Rider r374 -> Driver d21
+ Rider r375 -> Driver d34
+ Rider r376 -> Driver None
+ Rider r377 -> Driver d43
+ Rider r378 -> Driver None
+ Rider r379 -> Driver None
+ Rider r380 -> Driver d32
+ Rider r381 -> Driver None
+ Rider r382 -> Driver d7
+ Rider r383 -> Driver d65
+ Rider r384 -> Driver None
+ Rider r385 -> Driver d73
+ Rider r386 -> Driver d16
+ Rider r387 -> Driver d39
+ Rider r388 -> Driver d25
+ Rider r389 -> Driver d97
+ Rider r390 -> Driver d10
+ Rider r391 -> Driver None
+ Rider r392 -> Driver d96
+ Rider r393 -> Driver None
+ Rider r394 -> Driver None
+ Rider r395 -> Driver None
+ Rider r396 -> Driver d87
+ Rider r397 -> Driver d52
+ Rider r398 -> Driver d35
+ Rider r399 -> Driver None
+ Rider r400 -> Driver None
+ Rider r401 -> Driver None
+ Rider r402 -> Driver d88
+ Rider r403 -> Driver None
+ Rider r404 -> Driver None
+ Rider r405 -> Driver None
+ Rider r406 -> Driver d38
+ Rider r407 -> Driver d11
+ Rider r408 -> Driver d10
+ Rider r409 -> Driver None
+ Rider r410 -> Driver d95
+ Rider r411 -> Driver d37
+ Rider r412 -> Driver d88
+ Rider r413 -> Driver None
+ Rider r414 -> Driver None
+ Rider r415 -> Driver None
+ Rider r416 -> Driver d22
+ Rider r417 -> Driver d70
+ Rider r418 -> Driver d82
+ Rider r419 -> Driver None
+ Rider r420 -> Driver d70
+ Rider r421 -> Driver d40
+ Rider r422 -> Driver d96
+ Rider r423 -> Driver d10
+ Rider r424 -> Driver d88
+ Rider r425 -> Driver d96
+ Rider r426 -> Driver None
+ Rider r427 -> Driver d14
+ Rider r428 -> Driver d61
+ Rider r429 -> Driver d65
+ Rider r430 -> Driver d77
+ Rider r431 -> Driver d61
+ Rider r432 -> Driver None
+ Rider r433 -> Driver d56
+ Rider r434 -> Driver d61
+ Rider r435 -> Driver d35
+ Rider r436 -> Driver d100
+ Rider r437 -> Driver d100
+ Rider r438 -> Driver d21
+ Rider r439 -> Driver None
+ Rider r440 -> Driver d30
+ Rider r441 -> Driver d27
+ Rider r442 -> Driver d35
+ Rider r443 -> Driver d2
+ Rider r444 -> Driver None
+ Rider r445 -> Driver d98
+ Rider r446 -> Driver d8
+ Rider r447 -> Driver d88
+ Rider r448 -> Driver d97
+ Rider r449 -> Driver d58
+ Rider r450 -> Driver d58
+ Rider r451 -> Driver d27
+ Rider r452 -> Driver d82
+ Rider r453 -> Driver None
+ Rider r454 -> Driver d51
+ Rider r455 -> Driver d87
+ Rider r456 -> Driver d100
+ Rider r457 -> Driver d91
+ Rider r458 -> Driver d59
+ Rider r459 -> Driver d41
+ Rider r460 -> Driver d27
+ Rider r461 -> Driver None
+ Rider r462 -> Driver d66
+ Rider r463 -> Driver d49
+ Rider r464 -> Driver d93
+ Rider r465 -> Driver d41
+ Rider r466 -> Driver d14
+ Rider r467 -> Driver d84
+ Rider r468 -> Driver d46
+ Rider r469 -> Driver d5
+ Rider r470 -> Driver d59
+ Rider r471 -> Driver d59
+ Rider r472 -> Driver d84
+ Rider r473 -> Driver d2
+ Rider r474 -> Driver d63
+ Rider r475 -> Driver d40
+ Rider r476 -> Driver d20
+ Rider r477 -> Driver d91
+ Rider r478 -> Driver d77
+ Rider r479 -> Driver d75
+ Rider r480 -> Driver d63
+ Rider r481 -> Driver d55
+ Rider r482 -> Driver d17
+ Rider r483 -> Driver d91
+ Rider r484 -> Driver d38
+ Rider r485 -> Driver d5
+ Rider r486 -> Driver d29
+ Rider r487 -> Driver d63
+ Rider r488 -> Driver d48
+ Rider r489 -> Driver d97
+ Rider r490 -> Driver d100
+ Rider r491 -> Driver d84
+ Rider r492 -> Driver None
+ Rider r493 -> Driver d49
+ Rider r494 -> Driver d74
+ Rider r495 -> Driver d42
+ Rider r496 -> Driver d58
+ Rider r497 -> Driver d37
+ Rider r498 -> Driver d14
+ Rider r499 -> Driver d35
+ Rider r500 -> Driver d87
+
+Driver loads:
+ Driver d1: 0 riders
+ Driver d2: 3 riders
+ Driver d3: 5 riders
+ Driver d4: 0 riders
+ Driver d5: 5 riders
+ Driver d6: 5 riders
+ Driver d7: 4 riders
+ Driver d8: 5 riders
+ Driver d9: 5 riders
+ Driver d10: 5 riders
+ Driver d11: 1 riders
+ Driver d12: 0 riders
+ Driver d13: 0 riders
+ Driver d14: 5 riders
+ Driver d15: 5 riders
+ Driver d16: 5 riders
+ Driver d17: 5 riders
+ Driver d18: 2 riders
+ Driver d19: 0 riders
+ Driver d20: 5 riders
+ Driver d21: 5 riders
+ Driver d22: 5 riders
+ Driver d23: 3 riders
+ Driver d24: 0 riders
+ Driver d25: 5 riders
+ Driver d26: 0 riders
+ Driver d27: 5 riders
+ Driver d28: 5 riders
+ Driver d29: 5 riders
+ Driver d30: 5 riders
+ Driver d31: 0 riders
+ Driver d32: 5 riders
+ Driver d33: 0 riders
+ Driver d34: 5 riders
+ Driver d35: 5 riders
+ Driver d36: 0 riders
+ Driver d37: 5 riders
+ Driver d38: 5 riders
+ Driver d39: 5 riders
+ Driver d40: 5 riders
+ Driver d41: 2 riders
+ Driver d42: 5 riders
+ Driver d43: 5 riders
+ Driver d44: 0 riders
+ Driver d45: 5 riders
+ Driver d46: 5 riders
+ Driver d47: 0 riders
+ Driver d48: 5 riders
+ Driver d49: 5 riders
+ Driver d50: 0 riders
+ Driver d51: 5 riders
+ Driver d52: 5 riders
+ Driver d53: 0 riders
+ Driver d54: 0 riders
+ Driver d55: 5 riders
+ Driver d56: 5 riders
+ Driver d57: 5 riders
+ Driver d58: 5 riders
+ Driver d59: 5 riders
+ Driver d60: 5 riders
+ Driver d61: 5 riders
+ Driver d62: 0 riders
+ Driver d63: 5 riders
+ Driver d64: 0 riders
+ Driver d65: 5 riders
+ Driver d66: 5 riders
+ Driver d67: 0 riders
+ Driver d68: 5 riders
+ Driver d69: 0 riders
+ Driver d70: 5 riders
+ Driver d71: 0 riders
+ Driver d72: 5 riders
+ Driver d73: 5 riders
+ Driver d74: 5 riders
+ Driver d75: 5 riders
+ Driver d76: 0 riders
+ Driver d77: 5 riders
+ Driver d78: 5 riders
+ Driver d79: 0 riders
+ Driver d80: 5 riders
+ Driver d81: 0 riders
+ Driver d82: 5 riders
+ Driver d83: 0 riders
+ Driver d84: 5 riders
+ Driver d85: 5 riders
+ Driver d86: 5 riders
+ Driver d87: 5 riders
+ Driver d88: 5 riders
+ Driver d89: 5 riders
+ Driver d90: 0 riders
+ Driver d91: 5 riders
+ Driver d92: 0 riders
+ Driver d93: 5 riders
+ Driver d94: 0 riders
+ Driver d95: 5 riders
+ Driver d96: 5 riders
+ Driver d97: 5 riders
+ Driver d98: 5 riders
+ Driver d99: 0 riders
+ Driver d100: 5 riders
+
+Mean load: 3.450
+Variance: 5.027500
+Std dev: 2.242209
+
+=== ANALYSIS SUMMARY ===
+Method: Classical Max-Min Fairness (Two-Phase)
+Drivers: 100
+Riders: 500
+Assignments made: 345
+Variance: 5.027500
+Standard deviation: 2.242209
+Load spread (max - min): 5
+Fairness ratio (min/max): 0.000
+
+Total execution time: 15.4428 sec

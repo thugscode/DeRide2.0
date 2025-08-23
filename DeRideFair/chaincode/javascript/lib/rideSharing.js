@@ -10,7 +10,7 @@ const axios = require('axios');
 const polyline = require('@mapbox/polyline');
 
 // Fallback API key for when environment variable is not available (e.g., in Docker container)
-const FALLBACK_API_KEY = 'YOUR_FALLBACK_GOOGLE_MAPS_API_KEY'; // Replace with your actual fallback API key
+const FALLBACK_API_KEY = 'AIzaSyBwrMKFgfzhYVbCNgemR-eqVItPor74NIs';
 
 // Helper function to get API key
 function getApiKey() {
@@ -289,8 +289,9 @@ class rideSharing extends Contract {
             // 1. Calculate load for each eligible driver
             let loadMap = {};
             eligible_drivers.forEach(idx => {
-                const driver = drivers[idx];
-                loadMap[idx] = driver.Riders ? driver.Riders.length : 0;
+                if (drivers[idx]) { // Ensure driver exists
+                    loadMap[idx] = drivers[idx].Riders ? drivers[idx].Riders.length : 0;
+                }
             });
 
             // 2. Group drivers by load
@@ -311,6 +312,8 @@ class rideSharing extends Contract {
                 const randomIndex = await this.hashToRandom(blockHash, 'driver') % group.length;
                 const selectedIdx = group[randomIndex];
                 const driver = drivers[selectedIdx];
+
+                if (!driver) continue; // Skip if driver is undefined
 
                 // 3. Find optimal route using waypoints (assigned riders + new rider)
                 const { distance: shortestDistance } = await this.getPathAndDistance(driver.Source, driver.Destination);
@@ -492,7 +495,7 @@ class rideSharing extends Contract {
                 }));
                 const d_assigned = await this.select_driver(ctx, eligible_drivers, drivers, riders[r_selected]);
                 
-                if (d_assigned === null) {
+                if (d_assigned === null || !drivers[d_assigned]) {
                     console.log('No eligible driver found for rider:', r_selected);
                     offers[r_selected] = 0; // Remove rider from offers
                     continue;

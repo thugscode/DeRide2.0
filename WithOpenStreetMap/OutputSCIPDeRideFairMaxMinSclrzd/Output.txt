@@ -1,0 +1,1119 @@
+🚗 MAX-MIN SCALARIZATION FOR RIDESHARE OPTIMIZATION 🚗
+============================================================
+📊 Loading data...
+   Drivers: 100, Riders: 500
+   Graph nodes: 156, edges: 410
+
+🎯 Estimating objective bounds for normalization...
+   f1 (riders) bounds: (0, 500)
+   f2 (variance) bounds: (0, 2475.0)
+=== EXACT MAX-MIN SCALARIZATION ANALYSIS ===
+
+Formulation: max_x min{u1(x), u2(x)}
+where:
+  u1(x) = (f1(x) - f1_min)/(f1_max - f1_min)
+  u2(x) = 1 - (f2(x) - f2_min)/(f2_max - f2_min)
+
+This finds the solution that maximizes the worst-case normalized utility.
+
+=== MAX-MIN SCALARIZATION RESULTS ===
+Max-Min Objective Value (t): 0.690000
+This represents: max_x min{u1(x), u2(x)}
+
+--- Raw Objective Values ---
+f1(x) - Total riders accommodated: 345.0
+f2(x) - Variance in rider distribution: 4.727500
+
+--- Normalized Utility Values ---
+u1(x) = (f1-f1_min)/(f1_max-f1_min): 0.690000
+u2(x) = 1 - (f2-f2_min)/(f2_max-f2_min): 0.998090
+t = min{u1, u2}: 0.690000
+
+--- Manual Verification ---
+u1 (manual): 0.690000
+u2 (manual): 0.998090
+min{u1, u2} (manual): 0.690000
+
+--- Objective Bounds Used ---
+f1 bounds: [0, 500]
+f2 bounds: [0.000000, 2475.000000]
+
+--- Assignment Details ---
+Rider r31 assigned to Driver d2
+Rider r443 assigned to Driver d2
+Rider r473 assigned to Driver d2
+Rider r2 assigned to Driver d3
+Rider r15 assigned to Driver d3
+Rider r21 assigned to Driver d3
+Rider r34 assigned to Driver d3
+Rider r457 assigned to Driver d3
+Rider r5 assigned to Driver d5
+Rider r41 assigned to Driver d5
+Rider r47 assigned to Driver d5
+Rider r105 assigned to Driver d5
+Rider r109 assigned to Driver d5
+Rider r18 assigned to Driver d6
+Rider r192 assigned to Driver d6
+Rider r200 assigned to Driver d6
+Rider r220 assigned to Driver d6
+Rider r452 assigned to Driver d6
+Rider r79 assigned to Driver d7
+Rider r201 assigned to Driver d7
+Rider r63 assigned to Driver d8
+Rider r116 assigned to Driver d8
+Rider r132 assigned to Driver d8
+Rider r164 assigned to Driver d8
+Rider r280 assigned to Driver d8
+Rider r106 assigned to Driver d9
+Rider r127 assigned to Driver d9
+Rider r354 assigned to Driver d9
+Rider r471 assigned to Driver d9
+Rider r494 assigned to Driver d9
+Rider r26 assigned to Driver d10
+Rider r90 assigned to Driver d10
+Rider r101 assigned to Driver d10
+Rider r126 assigned to Driver d10
+Rider r195 assigned to Driver d10
+Rider r159 assigned to Driver d12
+Rider r366 assigned to Driver d12
+Rider r407 assigned to Driver d12
+Rider r48 assigned to Driver d14
+Rider r253 assigned to Driver d14
+Rider r427 assigned to Driver d14
+Rider r466 assigned to Driver d14
+Rider r498 assigned to Driver d14
+Rider r142 assigned to Driver d15
+Rider r180 assigned to Driver d15
+Rider r235 assigned to Driver d15
+Rider r250 assigned to Driver d15
+Rider r332 assigned to Driver d15
+Rider r9 assigned to Driver d16
+Rider r35 assigned to Driver d16
+Rider r110 assigned to Driver d16
+Rider r275 assigned to Driver d16
+Rider r468 assigned to Driver d16
+Rider r8 assigned to Driver d17
+Rider r62 assigned to Driver d17
+Rider r175 assigned to Driver d17
+Rider r378 assigned to Driver d17
+Rider r406 assigned to Driver d17
+Rider r204 assigned to Driver d18
+Rider r251 assigned to Driver d18
+Rider r360 assigned to Driver d18
+Rider r129 assigned to Driver d19
+Rider r209 assigned to Driver d19
+Rider r284 assigned to Driver d19
+Rider r57 assigned to Driver d20
+Rider r64 assigned to Driver d20
+Rider r93 assigned to Driver d20
+Rider r99 assigned to Driver d20
+Rider r187 assigned to Driver d20
+Rider r217 assigned to Driver d21
+Rider r223 assigned to Driver d21
+Rider r228 assigned to Driver d21
+Rider r374 assigned to Driver d21
+Rider r438 assigned to Driver d21
+Rider r51 assigned to Driver d22
+Rider r95 assigned to Driver d22
+Rider r151 assigned to Driver d22
+Rider r262 assigned to Driver d22
+Rider r416 assigned to Driver d22
+Rider r56 assigned to Driver d23
+Rider r152 assigned to Driver d23
+Rider r296 assigned to Driver d23
+Rider r1 assigned to Driver d25
+Rider r17 assigned to Driver d25
+Rider r281 assigned to Driver d25
+Rider r365 assigned to Driver d25
+Rider r388 assigned to Driver d25
+Rider r295 assigned to Driver d27
+Rider r306 assigned to Driver d27
+Rider r472 assigned to Driver d27
+Rider r479 assigned to Driver d27
+Rider r489 assigned to Driver d27
+Rider r80 assigned to Driver d28
+Rider r148 assigned to Driver d28
+Rider r188 assigned to Driver d28
+Rider r218 assigned to Driver d28
+Rider r340 assigned to Driver d28
+Rider r50 assigned to Driver d29
+Rider r177 assigned to Driver d29
+Rider r271 assigned to Driver d29
+Rider r290 assigned to Driver d29
+Rider r421 assigned to Driver d29
+Rider r74 assigned to Driver d30
+Rider r82 assigned to Driver d30
+Rider r245 assigned to Driver d30
+Rider r339 assigned to Driver d30
+Rider r440 assigned to Driver d30
+Rider r3 assigned to Driver d32
+Rider r96 assigned to Driver d32
+Rider r133 assigned to Driver d32
+Rider r137 assigned to Driver d32
+Rider r424 assigned to Driver d32
+Rider r210 assigned to Driver d34
+Rider r239 assigned to Driver d34
+Rider r254 assigned to Driver d34
+Rider r286 assigned to Driver d34
+Rider r375 assigned to Driver d34
+Rider r292 assigned to Driver d35
+Rider r302 assigned to Driver d35
+Rider r309 assigned to Driver d35
+Rider r435 assigned to Driver d35
+Rider r442 assigned to Driver d35
+Rider r121 assigned to Driver d37
+Rider r181 assigned to Driver d37
+Rider r297 assigned to Driver d37
+Rider r417 assigned to Driver d37
+Rider r418 assigned to Driver d37
+Rider r75 assigned to Driver d38
+Rider r76 assigned to Driver d38
+Rider r279 assigned to Driver d38
+Rider r285 assigned to Driver d38
+Rider r414 assigned to Driver d38
+Rider r236 assigned to Driver d39
+Rider r267 assigned to Driver d39
+Rider r293 assigned to Driver d39
+Rider r298 assigned to Driver d39
+Rider r387 assigned to Driver d39
+Rider r13 assigned to Driver d40
+Rider r16 assigned to Driver d40
+Rider r92 assigned to Driver d40
+Rider r169 assigned to Driver d40
+Rider r182 assigned to Driver d40
+Rider r459 assigned to Driver d41
+Rider r465 assigned to Driver d41
+Rider r244 assigned to Driver d42
+Rider r287 assigned to Driver d42
+Rider r307 assigned to Driver d42
+Rider r363 assigned to Driver d42
+Rider r495 assigned to Driver d42
+Rider r29 assigned to Driver d43
+Rider r67 assigned to Driver d43
+Rider r78 assigned to Driver d43
+Rider r173 assigned to Driver d43
+Rider r367 assigned to Driver d43
+Rider r19 assigned to Driver d45
+Rider r112 assigned to Driver d45
+Rider r265 assigned to Driver d45
+Rider r321 assigned to Driver d45
+Rider r454 assigned to Driver d45
+Rider r205 assigned to Driver d46
+Rider r323 assigned to Driver d46
+Rider r327 assigned to Driver d46
+Rider r333 assigned to Driver d46
+Rider r488 assigned to Driver d46
+Rider r30 assigned to Driver d48
+Rider r49 assigned to Driver d48
+Rider r69 assigned to Driver d48
+Rider r100 assigned to Driver d48
+Rider r102 assigned to Driver d48
+Rider r103 assigned to Driver d51
+Rider r259 assigned to Driver d51
+Rider r266 assigned to Driver d51
+Rider r394 assigned to Driver d51
+Rider r399 assigned to Driver d51
+Rider r45 assigned to Driver d52
+Rider r282 assigned to Driver d52
+Rider r312 assigned to Driver d52
+Rider r347 assigned to Driver d52
+Rider r397 assigned to Driver d52
+Rider r7 assigned to Driver d55
+Rider r107 assigned to Driver d55
+Rider r123 assigned to Driver d55
+Rider r167 assigned to Driver d55
+Rider r481 assigned to Driver d55
+Rider r10 assigned to Driver d56
+Rider r27 assigned to Driver d56
+Rider r111 assigned to Driver d56
+Rider r369 assigned to Driver d56
+Rider r490 assigned to Driver d56
+Rider r117 assigned to Driver d57
+Rider r184 assigned to Driver d57
+Rider r334 assigned to Driver d57
+Rider r14 assigned to Driver d58
+Rider r22 assigned to Driver d58
+Rider r23 assigned to Driver d58
+Rider r42 assigned to Driver d58
+Rider r55 assigned to Driver d58
+Rider r54 assigned to Driver d59
+Rider r104 assigned to Driver d59
+Rider r357 assigned to Driver d59
+Rider r386 assigned to Driver d59
+Rider r477 assigned to Driver d59
+Rider r270 assigned to Driver d60
+Rider r294 assigned to Driver d60
+Rider r370 assigned to Driver d60
+Rider r402 assigned to Driver d60
+Rider r450 assigned to Driver d60
+Rider r240 assigned to Driver d61
+Rider r256 assigned to Driver d61
+Rider r300 assigned to Driver d61
+Rider r415 assigned to Driver d61
+Rider r456 assigned to Driver d61
+Rider r316 assigned to Driver d63
+Rider r436 assigned to Driver d63
+Rider r447 assigned to Driver d63
+Rider r474 assigned to Driver d63
+Rider r480 assigned to Driver d63
+Rider r6 assigned to Driver d65
+Rider r304 assigned to Driver d65
+Rider r383 assigned to Driver d65
+Rider r396 assigned to Driver d65
+Rider r429 assigned to Driver d65
+Rider r81 assigned to Driver d66
+Rider r97 assigned to Driver d66
+Rider r392 assigned to Driver d66
+Rider r462 assigned to Driver d66
+Rider r499 assigned to Driver d66
+Rider r68 assigned to Driver d68
+Rider r83 assigned to Driver d68
+Rider r163 assigned to Driver d68
+Rider r219 assigned to Driver d68
+Rider r318 assigned to Driver d68
+Rider r124 assigned to Driver d70
+Rider r161 assigned to Driver d70
+Rider r317 assigned to Driver d70
+Rider r487 assigned to Driver d70
+Rider r496 assigned to Driver d70
+Rider r32 assigned to Driver d72
+Rider r66 assigned to Driver d72
+Rider r98 assigned to Driver d72
+Rider r213 assigned to Driver d72
+Rider r119 assigned to Driver d73
+Rider r329 assigned to Driver d73
+Rider r385 assigned to Driver d73
+Rider r430 assigned to Driver d73
+Rider r478 assigned to Driver d73
+Rider r46 assigned to Driver d74
+Rider r122 assigned to Driver d74
+Rider r276 assigned to Driver d74
+Rider r372 assigned to Driver d74
+Rider r380 assigned to Driver d74
+Rider r39 assigned to Driver d75
+Rider r134 assigned to Driver d75
+Rider r143 assigned to Driver d75
+Rider r359 assigned to Driver d75
+Rider r483 assigned to Driver d75
+Rider r382 assigned to Driver d76
+Rider r11 assigned to Driver d77
+Rider r20 assigned to Driver d77
+Rider r36 assigned to Driver d77
+Rider r53 assigned to Driver d77
+Rider r59 assigned to Driver d77
+Rider r85 assigned to Driver d78
+Rider r206 assigned to Driver d78
+Rider r207 assigned to Driver d78
+Rider r257 assigned to Driver d78
+Rider r326 assigned to Driver d78
+Rider r77 assigned to Driver d80
+Rider r108 assigned to Driver d80
+Rider r150 assigned to Driver d80
+Rider r202 assigned to Driver d80
+Rider r313 assigned to Driver d80
+Rider r168 assigned to Driver d82
+Rider r222 assigned to Driver d82
+Rider r258 assigned to Driver d82
+Rider r308 assigned to Driver d82
+Rider r411 assigned to Driver d82
+Rider r4 assigned to Driver d84
+Rider r153 assigned to Driver d84
+Rider r176 assigned to Driver d84
+Rider r441 assigned to Driver d84
+Rider r486 assigned to Driver d84
+Rider r24 assigned to Driver d85
+Rider r131 assigned to Driver d85
+Rider r248 assigned to Driver d85
+Rider r291 assigned to Driver d85
+Rider r398 assigned to Driver d85
+Rider r12 assigned to Driver d86
+Rider r25 assigned to Driver d86
+Rider r405 assigned to Driver d86
+Rider r423 assigned to Driver d86
+Rider r484 assigned to Driver d86
+Rider r84 assigned to Driver d87
+Rider r338 assigned to Driver d87
+Rider r455 assigned to Driver d87
+Rider r485 assigned to Driver d87
+Rider r500 assigned to Driver d87
+Rider r233 assigned to Driver d88
+Rider r234 assigned to Driver d88
+Rider r412 assigned to Driver d88
+Rider r428 assigned to Driver d88
+Rider r437 assigned to Driver d88
+Rider r328 assigned to Driver d89
+Rider r351 assigned to Driver d89
+Rider r389 assigned to Driver d89
+Rider r431 assigned to Driver d89
+Rider r497 assigned to Driver d89
+Rider r144 assigned to Driver d90
+Rider r463 assigned to Driver d90
+Rider r493 assigned to Driver d90
+Rider r61 assigned to Driver d91
+Rider r160 assigned to Driver d91
+Rider r243 assigned to Driver d91
+Rider r358 assigned to Driver d91
+Rider r475 assigned to Driver d91
+Rider r171 assigned to Driver d93
+Rider r178 assigned to Driver d93
+Rider r196 assigned to Driver d93
+Rider r229 assigned to Driver d93
+Rider r446 assigned to Driver d93
+Rider r37 assigned to Driver d95
+Rider r43 assigned to Driver d95
+Rider r341 assigned to Driver d95
+Rider r401 assigned to Driver d95
+Rider r460 assigned to Driver d95
+Rider r186 assigned to Driver d96
+Rider r197 assigned to Driver d96
+Rider r422 assigned to Driver d96
+Rider r425 assigned to Driver d96
+Rider r458 assigned to Driver d96
+Rider r113 assigned to Driver d97
+Rider r246 assigned to Driver d97
+Rider r277 assigned to Driver d97
+Rider r319 assigned to Driver d97
+Rider r342 assigned to Driver d97
+Rider r185 assigned to Driver d98
+Rider r355 assigned to Driver d98
+Rider r404 assigned to Driver d98
+Rider r445 assigned to Driver d98
+Rider r449 assigned to Driver d98
+Rider r73 assigned to Driver d100
+Rider r114 assigned to Driver d100
+Rider r174 assigned to Driver d100
+Rider r203 assigned to Driver d100
+Rider r337 assigned to Driver d100
+
+Total assignments made: 345
+
+--- Driver Load Distribution ---
+Driver d1: 0 riders
+Driver d2: 3 riders
+Driver d3: 5 riders
+Driver d4: 0 riders
+Driver d5: 5 riders
+Driver d6: 5 riders
+Driver d7: 2 riders
+Driver d8: 5 riders
+Driver d9: 5 riders
+Driver d10: 5 riders
+Driver d11: 0 riders
+Driver d12: 3 riders
+Driver d13: 0 riders
+Driver d14: 5 riders
+Driver d15: 5 riders
+Driver d16: 5 riders
+Driver d17: 5 riders
+Driver d18: 3 riders
+Driver d19: 3 riders
+Driver d20: 5 riders
+Driver d21: 5 riders
+Driver d22: 5 riders
+Driver d23: 3 riders
+Driver d24: 0 riders
+Driver d25: 5 riders
+Driver d26: 0 riders
+Driver d27: 5 riders
+Driver d28: 5 riders
+Driver d29: 5 riders
+Driver d30: 5 riders
+Driver d31: 0 riders
+Driver d32: 5 riders
+Driver d33: 0 riders
+Driver d34: 5 riders
+Driver d35: 5 riders
+Driver d36: 0 riders
+Driver d37: 5 riders
+Driver d38: 5 riders
+Driver d39: 5 riders
+Driver d40: 5 riders
+Driver d41: 2 riders
+Driver d42: 5 riders
+Driver d43: 5 riders
+Driver d44: 0 riders
+Driver d45: 5 riders
+Driver d46: 5 riders
+Driver d47: 0 riders
+Driver d48: 5 riders
+Driver d49: 0 riders
+Driver d50: 0 riders
+Driver d51: 5 riders
+Driver d52: 5 riders
+Driver d53: 0 riders
+Driver d54: 0 riders
+Driver d55: 5 riders
+Driver d56: 5 riders
+Driver d57: 3 riders
+Driver d58: 5 riders
+Driver d59: 5 riders
+Driver d60: 5 riders
+Driver d61: 5 riders
+Driver d62: 0 riders
+Driver d63: 5 riders
+Driver d64: 0 riders
+Driver d65: 5 riders
+Driver d66: 5 riders
+Driver d67: 0 riders
+Driver d68: 5 riders
+Driver d69: 0 riders
+Driver d70: 5 riders
+Driver d71: 0 riders
+Driver d72: 4 riders
+Driver d73: 5 riders
+Driver d74: 5 riders
+Driver d75: 5 riders
+Driver d76: 1 riders
+Driver d77: 5 riders
+Driver d78: 5 riders
+Driver d79: 0 riders
+Driver d80: 5 riders
+Driver d81: 0 riders
+Driver d82: 5 riders
+Driver d83: 0 riders
+Driver d84: 5 riders
+Driver d85: 5 riders
+Driver d86: 5 riders
+Driver d87: 5 riders
+Driver d88: 5 riders
+Driver d89: 5 riders
+Driver d90: 3 riders
+Driver d91: 5 riders
+Driver d92: 0 riders
+Driver d93: 5 riders
+Driver d94: 0 riders
+Driver d95: 5 riders
+Driver d96: 5 riders
+Driver d97: 5 riders
+Driver d98: 5 riders
+Driver d99: 0 riders
+Driver d100: 5 riders
+
+--- Fairness Metrics ---
+Actual calculated standard deviation: 2.174281
+Load spread (max - min): 5
+Fairness ratio (min/max): 0.000
+
+--- Interpretation ---
+Good balance between efficiency and fairness
+
+Rider assignments:
+  Rider r1 assigned to Driver d25
+  Rider r2 assigned to Driver d3
+  Rider r3 assigned to Driver d32
+  Rider r4 assigned to Driver d84
+  Rider r5 assigned to Driver d5
+  Rider r6 assigned to Driver d65
+  Rider r7 assigned to Driver d55
+  Rider r8 assigned to Driver d17
+  Rider r9 assigned to Driver d16
+  Rider r10 assigned to Driver d56
+  Rider r11 assigned to Driver d77
+  Rider r12 assigned to Driver d86
+  Rider r13 assigned to Driver d40
+  Rider r14 assigned to Driver d58
+  Rider r15 assigned to Driver d3
+  Rider r16 assigned to Driver d40
+  Rider r17 assigned to Driver d25
+  Rider r18 assigned to Driver d6
+  Rider r19 assigned to Driver d45
+  Rider r20 assigned to Driver d77
+  Rider r21 assigned to Driver d3
+  Rider r22 assigned to Driver d58
+  Rider r23 assigned to Driver d58
+  Rider r24 assigned to Driver d85
+  Rider r25 assigned to Driver d86
+  Rider r26 assigned to Driver d10
+  Rider r27 assigned to Driver d56
+  Rider r28 assigned to Driver None
+  Rider r29 assigned to Driver d43
+  Rider r30 assigned to Driver d48
+  Rider r31 assigned to Driver d2
+  Rider r32 assigned to Driver d72
+  Rider r33 assigned to Driver None
+  Rider r34 assigned to Driver d3
+  Rider r35 assigned to Driver d16
+  Rider r36 assigned to Driver d77
+  Rider r37 assigned to Driver d95
+  Rider r38 assigned to Driver None
+  Rider r39 assigned to Driver d75
+  Rider r40 assigned to Driver None
+  Rider r41 assigned to Driver d5
+  Rider r42 assigned to Driver d58
+  Rider r43 assigned to Driver d95
+  Rider r44 assigned to Driver None
+  Rider r45 assigned to Driver d52
+  Rider r46 assigned to Driver d74
+  Rider r47 assigned to Driver d5
+  Rider r48 assigned to Driver d14
+  Rider r49 assigned to Driver d48
+  Rider r50 assigned to Driver d29
+  Rider r51 assigned to Driver d22
+  Rider r52 assigned to Driver None
+  Rider r53 assigned to Driver d77
+  Rider r54 assigned to Driver d59
+  Rider r55 assigned to Driver d58
+  Rider r56 assigned to Driver d23
+  Rider r57 assigned to Driver d20
+  Rider r58 assigned to Driver None
+  Rider r59 assigned to Driver d77
+  Rider r60 assigned to Driver None
+  Rider r61 assigned to Driver d91
+  Rider r62 assigned to Driver d17
+  Rider r63 assigned to Driver d8
+  Rider r64 assigned to Driver d20
+  Rider r65 assigned to Driver None
+  Rider r66 assigned to Driver d72
+  Rider r67 assigned to Driver d43
+  Rider r68 assigned to Driver d68
+  Rider r69 assigned to Driver d48
+  Rider r70 assigned to Driver None
+  Rider r71 assigned to Driver None
+  Rider r72 assigned to Driver None
+  Rider r73 assigned to Driver d100
+  Rider r74 assigned to Driver d30
+  Rider r75 assigned to Driver d38
+  Rider r76 assigned to Driver d38
+  Rider r77 assigned to Driver d80
+  Rider r78 assigned to Driver d43
+  Rider r79 assigned to Driver d7
+  Rider r80 assigned to Driver d28
+  Rider r81 assigned to Driver d66
+  Rider r82 assigned to Driver d30
+  Rider r83 assigned to Driver d68
+  Rider r84 assigned to Driver d87
+  Rider r85 assigned to Driver d78
+  Rider r86 assigned to Driver None
+  Rider r87 assigned to Driver None
+  Rider r88 assigned to Driver None
+  Rider r89 assigned to Driver None
+  Rider r90 assigned to Driver d10
+  Rider r91 assigned to Driver None
+  Rider r92 assigned to Driver d40
+  Rider r93 assigned to Driver d20
+  Rider r94 assigned to Driver None
+  Rider r95 assigned to Driver d22
+  Rider r96 assigned to Driver d32
+  Rider r97 assigned to Driver d66
+  Rider r98 assigned to Driver d72
+  Rider r99 assigned to Driver d20
+  Rider r100 assigned to Driver d48
+  Rider r101 assigned to Driver d10
+  Rider r102 assigned to Driver d48
+  Rider r103 assigned to Driver d51
+  Rider r104 assigned to Driver d59
+  Rider r105 assigned to Driver d5
+  Rider r106 assigned to Driver d9
+  Rider r107 assigned to Driver d55
+  Rider r108 assigned to Driver d80
+  Rider r109 assigned to Driver d5
+  Rider r110 assigned to Driver d16
+  Rider r111 assigned to Driver d56
+  Rider r112 assigned to Driver d45
+  Rider r113 assigned to Driver d97
+  Rider r114 assigned to Driver d100
+  Rider r115 assigned to Driver None
+  Rider r116 assigned to Driver d8
+  Rider r117 assigned to Driver d57
+  Rider r118 assigned to Driver None
+  Rider r119 assigned to Driver d73
+  Rider r120 assigned to Driver None
+  Rider r121 assigned to Driver d37
+  Rider r122 assigned to Driver d74
+  Rider r123 assigned to Driver d55
+  Rider r124 assigned to Driver d70
+  Rider r125 assigned to Driver None
+  Rider r126 assigned to Driver d10
+  Rider r127 assigned to Driver d9
+  Rider r128 assigned to Driver None
+  Rider r129 assigned to Driver d19
+  Rider r130 assigned to Driver None
+  Rider r131 assigned to Driver d85
+  Rider r132 assigned to Driver d8
+  Rider r133 assigned to Driver d32
+  Rider r134 assigned to Driver d75
+  Rider r135 assigned to Driver None
+  Rider r136 assigned to Driver None
+  Rider r137 assigned to Driver d32
+  Rider r138 assigned to Driver None
+  Rider r139 assigned to Driver None
+  Rider r140 assigned to Driver None
+  Rider r141 assigned to Driver None
+  Rider r142 assigned to Driver d15
+  Rider r143 assigned to Driver d75
+  Rider r144 assigned to Driver d90
+  Rider r145 assigned to Driver None
+  Rider r146 assigned to Driver None
+  Rider r147 assigned to Driver None
+  Rider r148 assigned to Driver d28
+  Rider r149 assigned to Driver None
+  Rider r150 assigned to Driver d80
+  Rider r151 assigned to Driver d22
+  Rider r152 assigned to Driver d23
+  Rider r153 assigned to Driver d84
+  Rider r154 assigned to Driver None
+  Rider r155 assigned to Driver None
+  Rider r156 assigned to Driver None
+  Rider r157 assigned to Driver None
+  Rider r158 assigned to Driver None
+  Rider r159 assigned to Driver d12
+  Rider r160 assigned to Driver d91
+  Rider r161 assigned to Driver d70
+  Rider r162 assigned to Driver None
+  Rider r163 assigned to Driver d68
+  Rider r164 assigned to Driver d8
+  Rider r165 assigned to Driver None
+  Rider r166 assigned to Driver None
+  Rider r167 assigned to Driver d55
+  Rider r168 assigned to Driver d82
+  Rider r169 assigned to Driver d40
+  Rider r170 assigned to Driver None
+  Rider r171 assigned to Driver d93
+  Rider r172 assigned to Driver None
+  Rider r173 assigned to Driver d43
+  Rider r174 assigned to Driver d100
+  Rider r175 assigned to Driver d17
+  Rider r176 assigned to Driver d84
+  Rider r177 assigned to Driver d29
+  Rider r178 assigned to Driver d93
+  Rider r179 assigned to Driver None
+  Rider r180 assigned to Driver d15
+  Rider r181 assigned to Driver d37
+  Rider r182 assigned to Driver d40
+  Rider r183 assigned to Driver None
+  Rider r184 assigned to Driver d57
+  Rider r185 assigned to Driver d98
+  Rider r186 assigned to Driver d96
+  Rider r187 assigned to Driver d20
+  Rider r188 assigned to Driver d28
+  Rider r189 assigned to Driver None
+  Rider r190 assigned to Driver None
+  Rider r191 assigned to Driver None
+  Rider r192 assigned to Driver d6
+  Rider r193 assigned to Driver None
+  Rider r194 assigned to Driver None
+  Rider r195 assigned to Driver d10
+  Rider r196 assigned to Driver d93
+  Rider r197 assigned to Driver d96
+  Rider r198 assigned to Driver None
+  Rider r199 assigned to Driver None
+  Rider r200 assigned to Driver d6
+  Rider r201 assigned to Driver d7
+  Rider r202 assigned to Driver d80
+  Rider r203 assigned to Driver d100
+  Rider r204 assigned to Driver d18
+  Rider r205 assigned to Driver d46
+  Rider r206 assigned to Driver d78
+  Rider r207 assigned to Driver d78
+  Rider r208 assigned to Driver None
+  Rider r209 assigned to Driver d19
+  Rider r210 assigned to Driver d34
+  Rider r211 assigned to Driver None
+  Rider r212 assigned to Driver None
+  Rider r213 assigned to Driver d72
+  Rider r214 assigned to Driver None
+  Rider r215 assigned to Driver None
+  Rider r216 assigned to Driver None
+  Rider r217 assigned to Driver d21
+  Rider r218 assigned to Driver d28
+  Rider r219 assigned to Driver d68
+  Rider r220 assigned to Driver d6
+  Rider r221 assigned to Driver None
+  Rider r222 assigned to Driver d82
+  Rider r223 assigned to Driver d21
+  Rider r224 assigned to Driver None
+  Rider r225 assigned to Driver None
+  Rider r226 assigned to Driver None
+  Rider r227 assigned to Driver None
+  Rider r228 assigned to Driver d21
+  Rider r229 assigned to Driver d93
+  Rider r230 assigned to Driver None
+  Rider r231 assigned to Driver None
+  Rider r232 assigned to Driver None
+  Rider r233 assigned to Driver d88
+  Rider r234 assigned to Driver d88
+  Rider r235 assigned to Driver d15
+  Rider r236 assigned to Driver d39
+  Rider r237 assigned to Driver None
+  Rider r238 assigned to Driver None
+  Rider r239 assigned to Driver d34
+  Rider r240 assigned to Driver d61
+  Rider r241 assigned to Driver None
+  Rider r242 assigned to Driver None
+  Rider r243 assigned to Driver d91
+  Rider r244 assigned to Driver d42
+  Rider r245 assigned to Driver d30
+  Rider r246 assigned to Driver d97
+  Rider r247 assigned to Driver None
+  Rider r248 assigned to Driver d85
+  Rider r249 assigned to Driver None
+  Rider r250 assigned to Driver d15
+  Rider r251 assigned to Driver d18
+  Rider r252 assigned to Driver None
+  Rider r253 assigned to Driver d14
+  Rider r254 assigned to Driver d34
+  Rider r255 assigned to Driver None
+  Rider r256 assigned to Driver d61
+  Rider r257 assigned to Driver d78
+  Rider r258 assigned to Driver d82
+  Rider r259 assigned to Driver d51
+  Rider r260 assigned to Driver None
+  Rider r261 assigned to Driver None
+  Rider r262 assigned to Driver d22
+  Rider r263 assigned to Driver None
+  Rider r264 assigned to Driver None
+  Rider r265 assigned to Driver d45
+  Rider r266 assigned to Driver d51
+  Rider r267 assigned to Driver d39
+  Rider r268 assigned to Driver None
+  Rider r269 assigned to Driver None
+  Rider r270 assigned to Driver d60
+  Rider r271 assigned to Driver d29
+  Rider r272 assigned to Driver None
+  Rider r273 assigned to Driver None
+  Rider r274 assigned to Driver None
+  Rider r275 assigned to Driver d16
+  Rider r276 assigned to Driver d74
+  Rider r277 assigned to Driver d97
+  Rider r278 assigned to Driver None
+  Rider r279 assigned to Driver d38
+  Rider r280 assigned to Driver d8
+  Rider r281 assigned to Driver d25
+  Rider r282 assigned to Driver d52
+  Rider r283 assigned to Driver None
+  Rider r284 assigned to Driver d19
+  Rider r285 assigned to Driver d38
+  Rider r286 assigned to Driver d34
+  Rider r287 assigned to Driver d42
+  Rider r288 assigned to Driver None
+  Rider r289 assigned to Driver None
+  Rider r290 assigned to Driver d29
+  Rider r291 assigned to Driver d85
+  Rider r292 assigned to Driver d35
+  Rider r293 assigned to Driver d39
+  Rider r294 assigned to Driver d60
+  Rider r295 assigned to Driver d27
+  Rider r296 assigned to Driver d23
+  Rider r297 assigned to Driver d37
+  Rider r298 assigned to Driver d39
+  Rider r299 assigned to Driver None
+  Rider r300 assigned to Driver d61
+  Rider r301 assigned to Driver None
+  Rider r302 assigned to Driver d35
+  Rider r303 assigned to Driver None
+  Rider r304 assigned to Driver d65
+  Rider r305 assigned to Driver None
+  Rider r306 assigned to Driver d27
+  Rider r307 assigned to Driver d42
+  Rider r308 assigned to Driver d82
+  Rider r309 assigned to Driver d35
+  Rider r310 assigned to Driver None
+  Rider r311 assigned to Driver None
+  Rider r312 assigned to Driver d52
+  Rider r313 assigned to Driver d80
+  Rider r314 assigned to Driver None
+  Rider r315 assigned to Driver None
+  Rider r316 assigned to Driver d63
+  Rider r317 assigned to Driver d70
+  Rider r318 assigned to Driver d68
+  Rider r319 assigned to Driver d97
+  Rider r320 assigned to Driver None
+  Rider r321 assigned to Driver d45
+  Rider r322 assigned to Driver None
+  Rider r323 assigned to Driver d46
+  Rider r324 assigned to Driver None
+  Rider r325 assigned to Driver None
+  Rider r326 assigned to Driver d78
+  Rider r327 assigned to Driver d46
+  Rider r328 assigned to Driver d89
+  Rider r329 assigned to Driver d73
+  Rider r330 assigned to Driver None
+  Rider r331 assigned to Driver None
+  Rider r332 assigned to Driver d15
+  Rider r333 assigned to Driver d46
+  Rider r334 assigned to Driver d57
+  Rider r335 assigned to Driver None
+  Rider r336 assigned to Driver None
+  Rider r337 assigned to Driver d100
+  Rider r338 assigned to Driver d87
+  Rider r339 assigned to Driver d30
+  Rider r340 assigned to Driver d28
+  Rider r341 assigned to Driver d95
+  Rider r342 assigned to Driver d97
+  Rider r343 assigned to Driver None
+  Rider r344 assigned to Driver None
+  Rider r345 assigned to Driver None
+  Rider r346 assigned to Driver None
+  Rider r347 assigned to Driver d52
+  Rider r348 assigned to Driver None
+  Rider r349 assigned to Driver None
+  Rider r350 assigned to Driver None
+  Rider r351 assigned to Driver d89
+  Rider r352 assigned to Driver None
+  Rider r353 assigned to Driver None
+  Rider r354 assigned to Driver d9
+  Rider r355 assigned to Driver d98
+  Rider r356 assigned to Driver None
+  Rider r357 assigned to Driver d59
+  Rider r358 assigned to Driver d91
+  Rider r359 assigned to Driver d75
+  Rider r360 assigned to Driver d18
+  Rider r361 assigned to Driver None
+  Rider r362 assigned to Driver None
+  Rider r363 assigned to Driver d42
+  Rider r364 assigned to Driver None
+  Rider r365 assigned to Driver d25
+  Rider r366 assigned to Driver d12
+  Rider r367 assigned to Driver d43
+  Rider r368 assigned to Driver None
+  Rider r369 assigned to Driver d56
+  Rider r370 assigned to Driver d60
+  Rider r371 assigned to Driver None
+  Rider r372 assigned to Driver d74
+  Rider r373 assigned to Driver None
+  Rider r374 assigned to Driver d21
+  Rider r375 assigned to Driver d34
+  Rider r376 assigned to Driver None
+  Rider r377 assigned to Driver None
+  Rider r378 assigned to Driver d17
+  Rider r379 assigned to Driver None
+  Rider r380 assigned to Driver d74
+  Rider r381 assigned to Driver None
+  Rider r382 assigned to Driver d76
+  Rider r383 assigned to Driver d65
+  Rider r384 assigned to Driver None
+  Rider r385 assigned to Driver d73
+  Rider r386 assigned to Driver d59
+  Rider r387 assigned to Driver d39
+  Rider r388 assigned to Driver d25
+  Rider r389 assigned to Driver d89
+  Rider r390 assigned to Driver None
+  Rider r391 assigned to Driver None
+  Rider r392 assigned to Driver d66
+  Rider r393 assigned to Driver None
+  Rider r394 assigned to Driver d51
+  Rider r395 assigned to Driver None
+  Rider r396 assigned to Driver d65
+  Rider r397 assigned to Driver d52
+  Rider r398 assigned to Driver d85
+  Rider r399 assigned to Driver d51
+  Rider r400 assigned to Driver None
+  Rider r401 assigned to Driver d95
+  Rider r402 assigned to Driver d60
+  Rider r403 assigned to Driver None
+  Rider r404 assigned to Driver d98
+  Rider r405 assigned to Driver d86
+  Rider r406 assigned to Driver d17
+  Rider r407 assigned to Driver d12
+  Rider r408 assigned to Driver None
+  Rider r409 assigned to Driver None
+  Rider r410 assigned to Driver None
+  Rider r411 assigned to Driver d82
+  Rider r412 assigned to Driver d88
+  Rider r413 assigned to Driver None
+  Rider r414 assigned to Driver d38
+  Rider r415 assigned to Driver d61
+  Rider r416 assigned to Driver d22
+  Rider r417 assigned to Driver d37
+  Rider r418 assigned to Driver d37
+  Rider r419 assigned to Driver None
+  Rider r420 assigned to Driver None
+  Rider r421 assigned to Driver d29
+  Rider r422 assigned to Driver d96
+  Rider r423 assigned to Driver d86
+  Rider r424 assigned to Driver d32
+  Rider r425 assigned to Driver d96
+  Rider r426 assigned to Driver None
+  Rider r427 assigned to Driver d14
+  Rider r428 assigned to Driver d88
+  Rider r429 assigned to Driver d65
+  Rider r430 assigned to Driver d73
+  Rider r431 assigned to Driver d89
+  Rider r432 assigned to Driver None
+  Rider r433 assigned to Driver None
+  Rider r434 assigned to Driver None
+  Rider r435 assigned to Driver d35
+  Rider r436 assigned to Driver d63
+  Rider r437 assigned to Driver d88
+  Rider r438 assigned to Driver d21
+  Rider r439 assigned to Driver None
+  Rider r440 assigned to Driver d30
+  Rider r441 assigned to Driver d84
+  Rider r442 assigned to Driver d35
+  Rider r443 assigned to Driver d2
+  Rider r444 assigned to Driver None
+  Rider r445 assigned to Driver d98
+  Rider r446 assigned to Driver d93
+  Rider r447 assigned to Driver d63
+  Rider r448 assigned to Driver None
+  Rider r449 assigned to Driver d98
+  Rider r450 assigned to Driver d60
+  Rider r451 assigned to Driver None
+  Rider r452 assigned to Driver d6
+  Rider r453 assigned to Driver None
+  Rider r454 assigned to Driver d45
+  Rider r455 assigned to Driver d87
+  Rider r456 assigned to Driver d61
+  Rider r457 assigned to Driver d3
+  Rider r458 assigned to Driver d96
+  Rider r459 assigned to Driver d41
+  Rider r460 assigned to Driver d95
+  Rider r461 assigned to Driver None
+  Rider r462 assigned to Driver d66
+  Rider r463 assigned to Driver d90
+  Rider r464 assigned to Driver None
+  Rider r465 assigned to Driver d41
+  Rider r466 assigned to Driver d14
+  Rider r467 assigned to Driver None
+  Rider r468 assigned to Driver d16
+  Rider r469 assigned to Driver None
+  Rider r470 assigned to Driver None
+  Rider r471 assigned to Driver d9
+  Rider r472 assigned to Driver d27
+  Rider r473 assigned to Driver d2
+  Rider r474 assigned to Driver d63
+  Rider r475 assigned to Driver d91
+  Rider r476 assigned to Driver None
+  Rider r477 assigned to Driver d59
+  Rider r478 assigned to Driver d73
+  Rider r479 assigned to Driver d27
+  Rider r480 assigned to Driver d63
+  Rider r481 assigned to Driver d55
+  Rider r482 assigned to Driver None
+  Rider r483 assigned to Driver d75
+  Rider r484 assigned to Driver d86
+  Rider r485 assigned to Driver d87
+  Rider r486 assigned to Driver d84
+  Rider r487 assigned to Driver d70
+  Rider r488 assigned to Driver d46
+  Rider r489 assigned to Driver d27
+  Rider r490 assigned to Driver d56
+  Rider r491 assigned to Driver None
+  Rider r492 assigned to Driver None
+  Rider r493 assigned to Driver d90
+  Rider r494 assigned to Driver d9
+  Rider r495 assigned to Driver d42
+  Rider r496 assigned to Driver d70
+  Rider r497 assigned to Driver d89
+  Rider r498 assigned to Driver d14
+  Rider r499 assigned to Driver d66
+  Rider r500 assigned to Driver d87
+
+Driver filled seats:
+  Driver d1 filled seats: 0
+  Driver d2 filled seats: 3
+  Driver d3 filled seats: 5
+  Driver d4 filled seats: 0
+  Driver d5 filled seats: 5
+  Driver d6 filled seats: 5
+  Driver d7 filled seats: 2
+  Driver d8 filled seats: 5
+  Driver d9 filled seats: 5
+  Driver d10 filled seats: 5
+  Driver d11 filled seats: 0
+  Driver d12 filled seats: 3
+  Driver d13 filled seats: 0
+  Driver d14 filled seats: 5
+  Driver d15 filled seats: 5
+  Driver d16 filled seats: 5
+  Driver d17 filled seats: 5
+  Driver d18 filled seats: 3
+  Driver d19 filled seats: 3
+  Driver d20 filled seats: 5
+  Driver d21 filled seats: 5
+  Driver d22 filled seats: 5
+  Driver d23 filled seats: 3
+  Driver d24 filled seats: 0
+  Driver d25 filled seats: 5
+  Driver d26 filled seats: 0
+  Driver d27 filled seats: 5
+  Driver d28 filled seats: 5
+  Driver d29 filled seats: 5
+  Driver d30 filled seats: 5
+  Driver d31 filled seats: 0
+  Driver d32 filled seats: 5
+  Driver d33 filled seats: 0
+  Driver d34 filled seats: 5
+  Driver d35 filled seats: 5
+  Driver d36 filled seats: 0
+  Driver d37 filled seats: 5
+  Driver d38 filled seats: 5
+  Driver d39 filled seats: 5
+  Driver d40 filled seats: 5
+  Driver d41 filled seats: 2
+  Driver d42 filled seats: 5
+  Driver d43 filled seats: 5
+  Driver d44 filled seats: 0
+  Driver d45 filled seats: 5
+  Driver d46 filled seats: 5
+  Driver d47 filled seats: 0
+  Driver d48 filled seats: 5
+  Driver d49 filled seats: 0
+  Driver d50 filled seats: 0
+  Driver d51 filled seats: 5
+  Driver d52 filled seats: 5
+  Driver d53 filled seats: 0
+  Driver d54 filled seats: 0
+  Driver d55 filled seats: 5
+  Driver d56 filled seats: 5
+  Driver d57 filled seats: 3
+  Driver d58 filled seats: 5
+  Driver d59 filled seats: 5
+  Driver d60 filled seats: 5
+  Driver d61 filled seats: 5
+  Driver d62 filled seats: 0
+  Driver d63 filled seats: 5
+  Driver d64 filled seats: 0
+  Driver d65 filled seats: 5
+  Driver d66 filled seats: 5
+  Driver d67 filled seats: 0
+  Driver d68 filled seats: 5
+  Driver d69 filled seats: 0
+  Driver d70 filled seats: 5
+  Driver d71 filled seats: 0
+  Driver d72 filled seats: 4
+  Driver d73 filled seats: 5
+  Driver d74 filled seats: 5
+  Driver d75 filled seats: 5
+  Driver d76 filled seats: 1
+  Driver d77 filled seats: 5
+  Driver d78 filled seats: 5
+  Driver d79 filled seats: 0
+  Driver d80 filled seats: 5
+  Driver d81 filled seats: 0
+  Driver d82 filled seats: 5
+  Driver d83 filled seats: 0
+  Driver d84 filled seats: 5
+  Driver d85 filled seats: 5
+  Driver d86 filled seats: 5
+  Driver d87 filled seats: 5
+  Driver d88 filled seats: 5
+  Driver d89 filled seats: 5
+  Driver d90 filled seats: 3
+  Driver d91 filled seats: 5
+  Driver d92 filled seats: 0
+  Driver d93 filled seats: 5
+  Driver d94 filled seats: 0
+  Driver d95 filled seats: 5
+  Driver d96 filled seats: 5
+  Driver d97 filled seats: 5
+  Driver d98 filled seats: 5
+  Driver d99 filled seats: 0
+  Driver d100 filled seats: 5
+
+================================================================================
+
+=== ANALYSIS SUMMARY ===
+Method: Exact Max-Min Scalarization
+Riders accommodated: 345.0
+Standard deviation: 2.174281
+Variance: 4.727500
+Max-min objective value: 0.690000
+
+Performance relative to bounds:
+  Efficiency: 69.0% of maximum possible
+  Fairness: 99.8% of best possible fairness
+
+⏱️  Total execution time: 17.7453 seconds
+
+✅ Max-Min Scalarization Analysis Complete!

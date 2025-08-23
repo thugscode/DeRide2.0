@@ -1,0 +1,125 @@
+=== LEXICOGRAPHIC MAX–MIN FAIRNESS FOR RIDESHARE ===
+Drivers: 100, Riders: 500, Graph nodes: 156, edges: 410
+Using R_upperbound = 5 (min(num_riders, max_seats)).
+Phase t=1: max number of drivers with load >= 1 is 78
+Phase t=2: max number of drivers with load >= 2 is 74
+Phase t=3: max number of drivers with load >= 3 is 66
+Phase t=4: max number of drivers with load >= 4 is 64
+Phase t=5: max number of drivers with load >= 5 is 63
+Final tie-breaker optimal.
+Driver d1: 0 riders
+Driver d2: 2 riders
+Driver d3: 5 riders
+Driver d4: 0 riders
+Driver d5: 5 riders
+Driver d6: 5 riders
+Driver d7: 2 riders
+Driver d8: 5 riders
+Driver d9: 5 riders
+Driver d10: 5 riders
+Driver d11: 1 riders
+Driver d12: 2 riders
+Driver d13: 0 riders
+Driver d14: 5 riders
+Driver d15: 5 riders
+Driver d16: 5 riders
+Driver d17: 5 riders
+Driver d18: 4 riders
+Driver d19: 2 riders
+Driver d20: 5 riders
+Driver d21: 5 riders
+Driver d22: 5 riders
+Driver d23: 3 riders
+Driver d24: 0 riders
+Driver d25: 5 riders
+Driver d26: 0 riders
+Driver d27: 5 riders
+Driver d28: 5 riders
+Driver d29: 5 riders
+Driver d30: 5 riders
+Driver d31: 0 riders
+Driver d32: 5 riders
+Driver d33: 2 riders
+Driver d34: 5 riders
+Driver d35: 5 riders
+Driver d36: 0 riders
+Driver d37: 5 riders
+Driver d38: 5 riders
+Driver d39: 5 riders
+Driver d40: 5 riders
+Driver d41: 0 riders
+Driver d42: 5 riders
+Driver d43: 5 riders
+Driver d44: 0 riders
+Driver d45: 5 riders
+Driver d46: 5 riders
+Driver d47: 0 riders
+Driver d48: 5 riders
+Driver d49: 2 riders
+Driver d50: 0 riders
+Driver d51: 5 riders
+Driver d52: 5 riders
+Driver d53: 0 riders
+Driver d54: 1 riders
+Driver d55: 5 riders
+Driver d56: 5 riders
+Driver d57: 2 riders
+Driver d58: 5 riders
+Driver d59: 5 riders
+Driver d60: 5 riders
+Driver d61: 5 riders
+Driver d62: 0 riders
+Driver d63: 5 riders
+Driver d64: 0 riders
+Driver d65: 5 riders
+Driver d66: 5 riders
+Driver d67: 0 riders
+Driver d68: 5 riders
+Driver d69: 0 riders
+Driver d70: 5 riders
+Driver d71: 0 riders
+Driver d72: 3 riders
+Driver d73: 5 riders
+Driver d74: 5 riders
+Driver d75: 5 riders
+Driver d76: 2 riders
+Driver d77: 5 riders
+Driver d78: 5 riders
+Driver d79: 0 riders
+Driver d80: 5 riders
+Driver d81: 0 riders
+Driver d82: 5 riders
+Driver d83: 0 riders
+Driver d84: 5 riders
+Driver d85: 5 riders
+Driver d86: 5 riders
+Driver d87: 5 riders
+Driver d88: 5 riders
+Driver d89: 5 riders
+Driver d90: 1 riders
+Driver d91: 5 riders
+Driver d92: 1 riders
+Driver d93: 5 riders
+Driver d94: 0 riders
+Driver d95: 5 riders
+Driver d96: 5 riders
+Driver d97: 5 riders
+Driver d98: 5 riders
+Driver d99: 0 riders
+Driver d100: 5 riders
+
+=== LEXICOGRAPHIC FINAL RESULTS ===
+Min driver load: 0
+Total riders assigned: 345
+
+=== ANALYSIS SUMMARY ===
+Method: Lexicographic Max-Min Fairness
+Drivers: 100
+Riders: 500
+Assignments made: 345
+Variance: 4.547500
+Standard deviation: 2.132487
+Load spread (max - min): 5
+Fairness ratio (min/max): 0.000
+
+Total execution time: 18.9755 sec

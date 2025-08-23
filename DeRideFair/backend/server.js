@@ -155,7 +155,7 @@ async function notifyRideAssignment(contract) {
 async function checkAndTriggerAssignment(contract, username) {
   try {
     // Get environment variables for thresholds
-    const MIN_USERS_FOR_ASSIGNMENT = parseInt(process.env.MIN_USERS_FOR_ASSIGNMENT) || 2;
+    const MIN_USERS_FOR_ASSIGNMENT = parseInt(process.env.MIN_USERS_FOR_ASSIGNMENT) || 4;
 
     console.log('🔍 Checking assignment conditions...');
     console.log(`Threshold: Users=${MIN_USERS_FOR_ASSIGNMENT}`);
@@ -653,206 +653,108 @@ app.post("/update-database", async (req, res) => {
         });
       }
 
-      // Handle the new chaincode data structure
-      let optimizedPath = [];
-      try {
-        console.log('🗺️ Finding optimized route...');
-        optimizedPath = await findOptimizedRoute(userData);
-        console.log(`✅ Route found with ${optimizedPath.length} points`);
-      } catch (err) {
-        console.error('❌ Error finding optimized route:', err.message);
-        optimizedPath = [];
-      }
-
-      // Create the simplified data structure for saving to database
-      const processedData = {
-        ID: userData.ID,
-        Source: userData.Source,
-        Destination: userData.Destination,
-        Role: userData.Role,
-        Seats: userData.Seats,
-        Threshold: userData.Threshold,
-        Assigned: userData.Assigned,
-        Driver: typeof userData.Driver === 'object' && userData.Driver.ID 
-          ? userData.Driver.ID 
-          : (typeof userData.Driver === 'string' && userData.Driver.trim() !== ''
-            ? userData.Driver 
-            : (userData.Role === 'driver' ? username : 'unassigned')),
-        Riders: [],
-        Path: optimizedPath
-      };
-
-      // Process riders data based on the role
-      if (userData.Riders && Array.isArray(userData.Riders)) {
-        console.log(`🧑‍🤝‍🧑 Processing ${userData.Riders.length} riders...`);
-        processedData.Riders = userData.Riders.map(riderId => {
-          if (typeof riderId === 'string') {
-            return {
-              user: riderId,
-              Source: { lat: 0, lng: 0 },
-              Destination: { lat: 0, lng: 0 }
-            };
-          } else if (typeof riderId === 'object') {
-            const [user, details] = Object.entries(riderId)[0];
-            return {
-              user,
-              Source: details.Source || { lat: 0, lng: 0 },
-              Destination: details.Destination || { lat: 0, lng: 0 }
-            };
-          }
-          return riderId;
-        });
-      }
-
-      // Only save if Assigned is true and Driver is valid
-      if (processedData.Assigned === true) {
+      // Only save if Assigned is true
+      if (userData.Assigned === true) {
         console.log('✅ User is assigned, proceeding to save...');
-        
-        if (!processedData.Driver || processedData.Driver.trim() === '') {
-          console.error('❌ Driver field is empty, cannot save ride info');
-          return res.status(400).json({ 
-            status: false, 
-            errorMessage: 'Invalid driver assignment. Please try updating your ride details again.' 
-          });
+
+        // Transform Riders array to required format
+        let riders = [];
+        if (Array.isArray(userData.Riders)) {
+          riders = userData.Riders.map(rider => {
+            // If rider is already in correct format
+            if (
+              rider &&
+              typeof rider === 'object' &&
+              rider.user &&
+              rider.Source &&
+              rider.Destination
+            ) {
+              return {
+                user: rider.user,
+                Source: rider.Source,
+                Destination: rider.Destination
+              };
+            }
+            // If rider is an object with username as key
+            if (
+              rider &&
+              typeof rider === 'object' &&
+              Object.keys(rider).length === 1
+            ) {
+              const username = Object.keys(rider)[0];
+              const details = rider[username];
+              return {
+                user: username,
+                Source: details?.Source,
+                Destination: details?.Destination
+              };
+            }
+            // If rider is just a string (username), fill with empty objects
+            if (typeof rider === 'string') {
+              return {
+                user: rider,
+                Source: {},
+                Destination: {}
+              };
+            }
+            // Fallback: skip invalid
+            return null;
+          }).filter(r => r && r.user && r.Source && r.Destination);
         }
 
-        // For drivers: validate that they have riders assigned before saving
-        if (processedData.Role === 'driver') {
-          if (!processedData.Riders || processedData.Riders.length === 0) {
-            console.log('⚠️ Driver has no riders assigned yet, skipping save');
-            return res.status(400).json({ 
-              status: false, 
-              errorMessage: 'Driver assignment incomplete - no riders assigned yet. Please wait for complete assignment.' 
-            });
-          }
-          
-          // Check if riders have valid data (not just empty objects)
-          const validRiders = processedData.Riders.filter(rider => 
-            rider && 
-            rider.user && 
-            rider.user.trim() !== '' &&
-            rider.Source && 
-            rider.Destination &&
-            rider.Source.lat !== 0 && 
-            rider.Source.lng !== 0 &&
-            rider.Destination.lat !== 0 && 
-            rider.Destination.lng !== 0
-          );
-          
-          if (validRiders.length === 0) {
-            console.log('⚠️ Driver has no valid riders with location data, skipping save');
-            return res.status(400).json({ 
-              status: false, 
-              errorMessage: 'Driver assignment incomplete - riders do not have valid location data yet. Please wait for complete assignment.' 
-            });
-          }
-          
-          // Update processedData with only valid riders
-          processedData.Riders = validRiders;
-          console.log(`✅ Driver has ${validRiders.length} valid riders`);
+        // Ensure Driver is a non-empty string
+        let driverValue = userData.Driver;
+        if (!driverValue || typeof driverValue !== 'string' || driverValue.trim() === '') {
+          driverValue = username;
         }
 
-        console.log(`💾 Saving ride data for driver: ${processedData.Driver}`);
+        // Save ride info directly from blockchain data, but with transformed Riders and valid Driver
+        const rideInfoData = {
+          ...userData,
+          Driver: driverValue,
+          Riders: riders,
+          Date: new Date(),
+          Time: new Date().toLocaleTimeString()
+        };
 
-        // Check for true duplicates (same ride within the last 5 minutes)
+        // Check for recent duplicate (same ride within last 5 minutes)
         const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-        
-        console.log(`🔍 Checking for recent duplicates since: ${fiveMinutesAgo}`);
-
-        // For drivers, also check that we don't have incomplete rides (rides without proper rider data)
-        let recentDuplicate;
-        if (processedData.Role === 'driver') {
-          // Find recent duplicate that has valid rider data
-          recentDuplicate = await RideInfo.findOne({
-            Driver: processedData.Driver,
-            'Source.lat': processedData.Source.lat,
-            'Source.lng': processedData.Source.lng,
-            'Destination.lat': processedData.Destination.lat,
-            'Destination.lng': processedData.Destination.lng,
-            Assigned: true,
-            Date: { $gte: fiveMinutesAgo },
-            'Riders.0': { $exists: true }, // Ensure it has at least one rider
-            'Riders.user': { $ne: null, $ne: '' } // Ensure riders have valid user IDs
-          });
-        } else {
-          // For riders, use the original logic
-          recentDuplicate = await RideInfo.findOne({
-            Driver: processedData.Driver,
-            'Source.lat': processedData.Source.lat,
-            'Source.lng': processedData.Source.lng,
-            'Destination.lat': processedData.Destination.lat,
-            'Destination.lng': processedData.Destination.lng,
-            Assigned: true,
-            Date: { $gte: fiveMinutesAgo }
-          });
-        }
+        const recentDuplicate = await RideInfo.findOne({
+          Driver: rideInfoData.Driver,
+          'Source.lat': rideInfoData.Source?.lat,
+          'Source.lng': rideInfoData.Source?.lng,
+          'Destination.lat': rideInfoData.Destination?.lat,
+          'Destination.lng': rideInfoData.Destination?.lng,
+          Assigned: true,
+          Date: { $gte: fiveMinutesAgo }
+        });
 
         if (recentDuplicate) {
           console.log('📝 Recent duplicate found, updating instead of creating new...');
-          
-          // Update the existing recent ride with new data
           await RideInfo.updateOne(
             { _id: recentDuplicate._id },
             {
-              ...processedData,
-              Date: recentDuplicate.Date, // Keep original date
-              Time: recentDuplicate.Time   // Keep original time
+              ...rideInfoData,
+              Date: recentDuplicate.Date,
+              Time: recentDuplicate.Time
             }
           );
-          
-          // Fetch the updated ride info to return
           const updatedRide = await RideInfo.findById(recentDuplicate._id);
-
-          console.log('✅ Updated recent duplicate ride successfully');
-          
-          // Notify user about successful database update
           notifyUser(username, {
             type: 'RIDE_UPDATED',
             message: 'Your ride information has been updated successfully!',
             timestamp: new Date().toISOString()
           });
-          
           res.status(200).json({ status: true, message: 'Ride info updated successfully!', ride: updatedRide });
         } else {
-          console.log('🆕 No recent complete duplicate found, creating new...');
-          
-          // Before creating new ride, clean up any incomplete rides for this driver
-          if (processedData.Role === 'driver') {
-            const deletedIncomplete = await RideInfo.deleteMany({
-              Driver: processedData.Driver,
-              $or: [
-                { Riders: { $size: 0 } }, // No riders
-                { 'Riders.user': { $in: [null, ''] } }, // Riders with empty user IDs
-                { 'Riders.Source.lat': 0 }, // Riders with invalid coordinates
-                { 'Riders.Source.lng': 0 },
-                { 'Riders.Destination.lat': 0 },
-                { 'Riders.Destination.lng': 0 }
-              ]
-            });
-            
-            if (deletedIncomplete.deletedCount > 0) {
-              console.log(`🧹 Cleaned up ${deletedIncomplete.deletedCount} incomplete rides for driver ${processedData.Driver}`);
-            }
-          }
-
-          // Create new ride record without cleaning up previous rides
-          // This allows users to maintain their complete ride history
-          const newRideInfo = new RideInfo({
-            ...processedData,
-            Date: new Date(),
-            Time: new Date().toLocaleTimeString()
-          });
-
+          console.log('🆕 No recent duplicate found, creating new...');
+          const newRideInfo = new RideInfo(rideInfoData);
           await newRideInfo.save();
-          console.log('✅ New ride info saved successfully');
-          
-          // Notify user about successful database save
           notifyUser(username, {
             type: 'RIDE_SAVED',
             message: 'Your ride has been saved to history successfully!',
             timestamp: new Date().toISOString()
           });
-          
           res.status(200).json({ status: true, message: 'Ride info saved successfully!', ride: newRideInfo });
         }
       } else {

@@ -10,7 +10,10 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 data = [
     {"Algorithm": "DeRide", "0_riders": 22, "1_rider": 4, "2_riders": 6, "3_riders": 8, "4_riders": 5, "5_riders": 55},
     {"Algorithm": "DeRideFair", "0_riders": 23, "1_rider": 12, "2_riders": 12, "3_riders": 17, "4_riders": 13, "5_riders": 23},
-    {"Algorithm": "SCIP", "0_riders": 26, "1_rider": 1, "2_riders": 2, "3_riders": 7, "4_riders": 1, "5_riders": 63}
+    {"Algorithm": "SCIPDeRide", "0_riders": 26, "1_rider": 1, "2_riders": 2, "3_riders": 7, "4_riders": 1, "5_riders": 63},
+    {"Algorithm": "SCIPDeRideFairMMScalar", "0_riders": 26, "1_rider": 1, "2_riders": 2, "3_riders": 7, "4_riders": 1, "5_riders": 63},
+    {"Algorithm": "SCIPDeRideFairMM2Phase", "0_riders": 28, "1_rider": 1, "2_riders": 2, "3_riders": 2, "4_riders": 1, "5_riders": 66},
+    {"Algorithm": "SCIPDeRideFairMMLexico", "0_riders": 22, "1_rider": 4, "2_riders": 8, "3_riders": 2, "4_riders": 1, "5_riders": 63}
 ]
 
 df = pd.DataFrame(data)
@@ -34,19 +37,19 @@ for i, (level, label) in enumerate(zip(load_levels, load_labels)):
     # Create text labels with percentages
     text_labels = []
     for j, (val, pct) in enumerate(zip(df[level], percentages)):
-        if val > 0 and pct >= 5:  # Only show text if value > 0 and percentage >= 5%
-            text_labels.append(f'{pct}%')
+        if val > 0 and pct >= 5:
+            text_labels.append(f'<b>{pct}%</b>')
         else:
             text_labels.append('')
     
     fig.add_trace(go.Bar(
-        name=label,
+        name=f"<b>{label}</b>",  # Make legend label bold
         x=df['Algorithm'],
         y=df[level],
         marker_color=colors[i],
         text=text_labels,
         textposition='inside',
-        textfont=dict(size=11),
+        textfont=dict(size=11, family='Arial', color='black', weight='bold'),  # Use weight for bold
         cliponaxis=False
     ))
 
@@ -56,7 +59,8 @@ fig.update_layout(
     xaxis_title='Algorithm',
     yaxis_title='Num of Drivers',
     barmode='stack',
-    showlegend=True
+    showlegend=True,
+    legend=dict(font=dict(size=12, family='Arial', color='black', weight='bold'))  # Use weight for bold
 )
 
 # Save the chart in the same directory as the script

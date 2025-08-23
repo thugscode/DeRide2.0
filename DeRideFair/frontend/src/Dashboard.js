@@ -1114,16 +1114,6 @@ class Dashboard extends Component {
                     )}
                     <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
                       {/* Real-time connection status */}
-                      <div style={{ 
-                        backgroundColor: this.state.isConnectedToEvents ? '#4CAF50' : '#f44336', 
-                        color: 'white', 
-                        padding: '2px 6px', 
-                        borderRadius: '10px', 
-                        fontSize: '10px',
-                        marginRight: '10px'
-                      }}>
-                        {this.state.isConnectedToEvents ? '🟢 Live' : '🔴 Offline'}
-                      </div>
                       <Button
                         className="button_style"
                         variant="contained"

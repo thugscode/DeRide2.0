@@ -493,19 +493,18 @@ class RideShareSystem:
     def output_results(self, DPassigned, output_file):
         total_remaining_seats = sum(driver.seats for driver in self.drivers)
         total_riders = len(self.riders)
-        output_file.write(f"Total remaining seats: {total_remaining_seats}, Total riders: {total_riders}\n")
-        
+
         output_file.write("===== Input Data =====\n")
         output_file.write("\nDrivers Information:\n")
         for driver in self.drivers:
             output_file.write(f"Driver ID: {driver.id}, Source: {driver.source}, "
-                            f"Destination: {driver.destination}, Seats: {driver.seats}, "
-                            f"Threshold: {driver.threshold}\n")
+                              f"Destination: {driver.destination}, Seats: {driver.seats}, "
+                              f"Threshold: {driver.threshold}\n")
 
         output_file.write("\nRiders Information:\n")
         for rider in self.riders:
             output_file.write(f"Rider ID: {rider.id}, Source: {rider.source}, "
-                            f"Destination: {rider.destination}\n")
+                              f"Destination: {rider.destination}\n")
 
         output_file.write("\n===== Assigned Riders, Paths, and Remaining Seats for Each Driver =====\n")
         for driver_id, assignment in DPassigned.items():
@@ -513,8 +512,8 @@ class RideShareSystem:
             output_file.write(f"  Driver Path: {assignment['driver_path']}\n")
             for rider in assignment['riders']:
                 output_file.write(f"    Rider ID: {rider['rider_id']}, "
-                            f"Source: {rider['source']}, "
-                            f"Destination: {rider['destination']}\n")
+                                  f"Source: {rider['source']}, "
+                                  f"Destination: {rider['destination']}\n")
 
         output_file.write(f"\nTotal Current Seats Available: {total_remaining_seats}/{self.total_initial_seats}, Total Number of Accommodated Riders: {self.total_initial_seats - total_remaining_seats} out of {total_riders}\n")
 
@@ -552,7 +551,7 @@ class RideShareSystem:
         output_file.write(f"Standard Deviation of Filled Seats: {std_deviation:.2f}\n")
         output_file.write(f"Range of Filled Seats: {min(driver_filled_seats)} to {max(driver_filled_seats)} seats\n")
         output_file.write(f"Load Balance Quality: {'Excellent' if std_deviation < 1.0 else 'Good' if std_deviation < 2.0 else 'Fair'}\n")
-
+        output_file.write(f"Variance of Filled Seats: {variance:.4f}\n")
         print("Results have been written to Output.txt.")
 
 

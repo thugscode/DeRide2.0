@@ -75,7 +75,7 @@ class EligibilityRiderMatrix:
             output_file.write(f"##### Driver {driver.id}: ##### \n")
             shortest_path, sp_length = self.shortest_path_distance(driver.source, driver.destination, output_file)
             t = driver.threshold
-            radius = 200
+            radius = 0
             if t == 0:
             
                 nodes_within_circle_of_shortest_path_nodes = self.find_nodes_within_threshold(shortest_path, radius)
@@ -171,7 +171,7 @@ class EligibilityRiderMatrix:
 
             if not DP_assigned[driver.id]['driver_path']:
                 
-                radius = 200
+                radius = 0
                 
                 path, path_nodes = None, None
                 
@@ -404,8 +404,7 @@ class RideShareSystem:
         output_file.write(f"Standard Deviation of Filled Seats: {std_deviation:.2f}\n")
         output_file.write(f"Range of Filled Seats: {min(driver_filled_seats)} to {max(driver_filled_seats)} seats\n")
         output_file.write(f"Load Balance Quality: {'Excellent' if std_deviation < 1.0 else 'Good' if std_deviation < 2.0 else 'Fair'}\n")
-
-        print("Results have been written to Output.txt.")
+        output_file.write(f"Variance of Filled Seats: {variance:.4f}\n")
 
 
 if __name__ == "__main__":

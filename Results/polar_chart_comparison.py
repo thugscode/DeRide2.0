@@ -2,51 +2,59 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-# Raw dataset
+# Raw dataset (updated, removed Standard_Deviation and Drivers_with_Zero_Load)
 data = {
     "DeRide": {
-        "Variance": 4.33,
-        "Total_Riders_Accommodated": 335,
-        "Standard_Deviation": 2.08,
+        "Variance": 4.5291,
+        "Total_Riders_Accommodated": 297,
         "Utilization_Rate_Percent": 67.0,
-        "Drivers_with_Zero_Load": 22,
         "Gini_Coefficient": 0.319
     },
     "DeRideFair": {
-        "Variance": 3.21,
-        "Total_Riders_Accommodated": 254,
-        "Standard_Deviation": 1.87,
-        "Utilization_Rate_Percent": 50.8,
-        "Drivers_with_Zero_Load": 23,
+        "Variance": 3.7131,
+        "Total_Riders_Accommodated": 263,
+        "Utilization_Rate_Percent": 52.6,
         "Gini_Coefficient": 0.448
     },
-    "SCIP": {
-        "Variance": 4.73,
+    "SCIPDeRide": {
+        "Variance": 5.0275,
         "Total_Riders_Accommodated": 345,
-        "Standard_Deviation": 2.17,
         "Utilization_Rate_Percent": 69.0,
-        "Drivers_with_Zero_Load": 26,
         "Gini_Coefficient": 0.307
-    }
+    },
+    # "SCIPDeRideFairMM2Phase": {
+    #     "Variance": 5.0275,
+    #     "Total_Riders_Accommodated": 345,
+    #     "Utilization_Rate_Percent": 69.0,
+    #     "Gini_Coefficient": 0.307
+    # },
+    "SCIPDeRideFairMMLexico": {
+        "Variance": 4.5475,
+        "Total_Riders_Accommodated": 345,
+        "Utilization_Rate_Percent": 69.0,
+        "Gini_Coefficient": 0.307
+    },
+    # "SCIPDeRideFairMMScalar": {
+    #     "Variance": 4.7275,
+    #     "Total_Riders_Accommodated": 345,
+    #     "Utilization_Rate_Percent": 69.0,
+    #     "Gini_Coefficient": 0.307
+    # }
 }
 
-# Min/Max ranges for normalization
+# Min/Max ranges for normalization (removed Standard_Deviation and Drivers_with_Zero_Load)
 ranges = {
-    "Variance": (0, 6.25),
+    "Variance": (0, 6.0),
     "Total_Riders_Accommodated": (0, 500),
-    "Standard_Deviation": (0, 2.5),
     "Utilization_Rate_Percent": (0, 100),
-    "Drivers_with_Zero_Load": (0, 100),
     "Gini_Coefficient": (0, 1)
 }
 
-# Friendly labels
+# Friendly labels (removed Standard_Deviation and Drivers_with_Zero_Load)
 labels_map = {
-    "Variance": "Ride Variance (lower better)",
-    "Total_Riders_Accommodated": "Riders Accommodated",
-    "Standard_Deviation": "Std. Deviation (lower better)",
-    "Utilization_Rate_Percent": "Utilization (%)",
-    "Drivers_with_Zero_Load": "Drivers w/ Zero Load",
+    "Variance": "Load Variance (lower better)",
+    "Total_Riders_Accommodated": "Riders Served",
+    "Utilization_Rate_Percent": "Seat Utilization (%)",
     "Gini_Coefficient": "Gini Fairness"
 }
 
@@ -66,7 +74,7 @@ angles = np.linspace(0, 2*np.pi, N, endpoint=False).tolist()
 angles += angles[:1]  # close loop
 
 # Plot
-fig, ax = plt.subplots(figsize=(8,8), subplot_kw=dict(polar=True))
+fig, ax = plt.subplots(figsize=(10,10), subplot_kw=dict(polar=True))
 
 ax.set_theta_offset(np.pi / 2)
 ax.set_theta_direction(-1)
